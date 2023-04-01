@@ -1,6 +1,6 @@
 # ES-2023-2Sem-Terca-Feira-LEIPL-GrupoF
 
-Eduardo Oliveira 
+Eduardo Oliveira  92941 ecoliveiraa
 
 Francisco Ribeiro 83032 Francisco451-ux
 
