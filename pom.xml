@@ -7,6 +7,10 @@
     <groupId>org.example</groupId>
     <artifactId>ES-2023-2Sem-Terca-Feira-LEIPL-GrupoF</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>src</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
