@@ -1,4 +1,8 @@
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Iterator;
 
 public class JAVAToHTML {
@@ -48,7 +52,7 @@ public class JAVAToHTML {
             writer.write("<div class=\"table-schedule-main\"><table border>\n");
 
             // Parse JSON array from file
-            JSONArray jsonArray = new JSONArray(fileToString(jsonFile));
+            JSONArray jsonArray = new JSONArray(fileToString(JSONFile));
 
             // Generate table headers from first JSON object
             JSONObject firstObject = jsonArray.getJSONObject(0);
@@ -75,14 +79,14 @@ public class JAVAToHTML {
 
             writer.write("</table></div>\n");
 
-        } catch (IOException | JSONException e) {
-            writer.write("Table not found");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return outputFile;
     }
 
-    public String fileToString(File file) throws IOException {
+    public static String fileToString(File file) throws IOException {
         String content = new String(Files.readAllBytes(file.toPath()));
         return content;
     }
