@@ -3,15 +3,28 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.Iterator;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 
 public class FileServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -98,6 +111,16 @@ public class FileServlet extends HttpServlet {
         String content = new String(Files.readAllBytes(file.toPath()));
         return content;
     }
+
+
+
+
+
+
+
+
+
+
 
 
 }
