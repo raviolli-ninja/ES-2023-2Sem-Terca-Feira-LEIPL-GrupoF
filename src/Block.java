@@ -7,9 +7,9 @@ public class Block {
 
     String uc,turma,dia_sem,sala;
     int maxSala,nInscritos;
-    LocalTime horaInicioUC,horaFimUC;
+    String horaInicioUC,horaFimUC;
 
-    Date dataAula;
+    String dataAula;
 
     public Block(String uc, String turma, String dia_sem, String sala, int maxSala, int nInscritos, String horaInicioUC, String horaFimUC, String dataAula) {
         this.uc = uc;
@@ -71,27 +71,27 @@ public class Block {
         this.nInscritos = nInscritos;
     }
 
-    public LocalTime getHoraInicioUC() {
+    public String getHoraInicioUC() {
         return horaInicioUC;
     }
 
-    public void setHoraInicioUC(LocalTime horaInicioUC) {
+    public void setHoraInicioUC(String horaInicioUC) {
         this.horaInicioUC = horaInicioUC;
     }
 
-    public LocalTime getHoraFimUC() {
+    public String getHoraFimUC() {
         return horaFimUC;
     }
 
-    public void setHoraFimUC(LocalTime horaFimUC) {
+    public void setHoraFimUC(String horaFimUC) {
         this.horaFimUC = horaFimUC;
     }
 
-    public Date getDataAula() {
+    public String getDataAula() {
         return dataAula;
     }
 
-    public void setDataAula(Date dataAula) {
+    public void setDataAula(String dataAula) {
         this.dataAula = dataAula;
     }
 }
