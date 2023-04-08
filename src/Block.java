@@ -11,7 +11,7 @@ public class Block {
 
     Date dataAula;
 
-    public Block(String uc, String turma, String dia_sem, String sala, int maxSala, int nInscritos, LocalTime horaInicioUC, LocalTime horaFimUC, Date dataAula) {
+    public Block(String uc, String turma, String dia_sem, String sala, int maxSala, int nInscritos, String horaInicioUC, String horaFimUC, String dataAula) {
         this.uc = uc;
         this.turma = turma;
         this.dia_sem = dia_sem;

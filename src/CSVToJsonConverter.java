@@ -20,15 +20,17 @@ public class CSVToJsonConverter {
                 String UC = values [1];
                 String turno = values[2];
                 String turma = values[3];
-                int inscritos = Integer.parseInt(values[4]);
-                String dia_semana = values[5];
+                int nInscritos = Integer.parseInt(values[4]);
+                String dia_sem = values[5];
                 String horaInicioUC = values[6];
                 String horaFimUC = values [7];
-                String data = values [8];
+                String dataAula = values [8];
                 String sala = values[9];
-                int lotacao = Integer.parseInt(values[10]);
-                //Block bloco = new Block();
-                //horario.addToHor(bloco);
+                int maxsala = Integer.parseInt(values[10]);
+                //Block(String uc, String turma, String dia_sem, String sala, int maxSala, int nInscritos, String horaInicioUC, String horaFimUC, String dataAula)
+                Block bloco = new Block(UC, turma, dia_sem, sala, maxsala, nInscritos, horaInicioUC, horaFimUC, dataAula);
+                System.out.println(bloco);
+                horario.addToHor(bloco);
             }
 
         } catch (IOException e) {
