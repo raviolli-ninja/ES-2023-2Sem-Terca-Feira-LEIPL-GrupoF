@@ -12,8 +12,8 @@ public class WebcalToCsv {
     public static void main(String[] args) throws IOException, ParserException {
 
         // Define the webcal URL and CSV file path
-        String webcalUrl = "";
-        String csvFilePath = "calendar.csv";
+        String webcalUrl = "webcal://fenix.iscte-iul.pt/publico/publicPersonICalendar.do?method=iCalendar&username=pdrao@iscte.pt&password=myPOES12X9AW2BNgM0PhTVR8MNkWZsYwmDqaLXiNrVdN1wEjwQvl3XwzJuZfF1OclDs7E0uZAAypfd9ELdoPen6RxU8EMPpqpBaAJIErY0GRYOYusUbYCkyPQdHS93na";
+        String csvFilePath = "horario.csv";
 
         // Read the webcal URL and parse the iCalendar data
         URL url = new URL(webcalUrl);
