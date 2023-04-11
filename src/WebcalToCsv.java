@@ -12,7 +12,7 @@ public class WebcalToCsv {
     public static void main(String[] args) throws IOException, ParserException {
 
         // Define the webcal URL and CSV file path
-        String webcalUrl = "https://example.com/calendar.ics";
+        String webcalUrl = "";
         String csvFilePath = "calendar.csv";
 
         // Read the webcal URL and parse the iCalendar data
