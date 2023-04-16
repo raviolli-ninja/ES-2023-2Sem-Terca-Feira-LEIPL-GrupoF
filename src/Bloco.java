@@ -1,31 +1,21 @@
-<<<<<<<< HEAD:Bloco.java
-========
 package src;
 
-import java.time.LocalTime;
-import java.util.Date;
->>>>>>>> origin/task#1:src/Block.java
 
 
-<<<<<<<< HEAD:Bloco.java
+
+
+
+
 public class Bloco {
 
     public  String uc,turma,dia_sem,sala, curso, turno,horaInicioUC,horaFimUC, dataAula;
     public int maxSala,nInscritos;
-    //LocalTime horaInicioUC,horaFimUC;
 
-    //Date dataAula;
 
-    public Bloco(String uc, String curso, String turma, String dia_sem, String sala, int maxSala, int nInscritos, String horaInicioUC, String horaFimUC, String dataAula, String turno) {
-========
-    String uc,turma,dia_sem,sala;
-    int maxSala,nInscritos;
-    String horaInicioUC,horaFimUC;
 
-    String dataAula;
 
-    public Block(String uc, String turma, String dia_sem, String sala, int maxSala, int nInscritos, String horaInicioUC, String horaFimUC, String dataAula) {
->>>>>>>> origin/task#1:src/Block.java
+    public Bloco(String uc, String turma, String dia_sem, String sala, int maxSala, int nInscritos, String horaInicioUC, String horaFimUC, String dataAula) {
+
         this.uc = uc;
         this.turma = turma;
         this.curso = curso;
@@ -103,11 +93,11 @@ public class Bloco {
         this.nInscritos = nInscritos;
     }
 
-<<<<<<<< HEAD:Bloco.java
-    public String  getHoraInicioUC() {
-========
+
+
+
     public String getHoraInicioUC() {
->>>>>>>> origin/task#1:src/Block.java
+
         return horaInicioUC;
     }
 
