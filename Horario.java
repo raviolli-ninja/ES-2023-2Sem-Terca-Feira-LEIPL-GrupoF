@@ -8,19 +8,17 @@ public class Horario {
     String nome,curso;
     int numero;
 
-    List<Block> horario = new ArrayList<Block>();
+    List<Bloco> horario = new ArrayList<Bloco>();
 
-    public Horario(String nome, String curso, int numero) {
-        this.nome = nome;
-        this.curso=curso;
-        this.numero = numero;
+    public Horario() {
+
     }
 
     public Horario(String nome) {
         this.nome = nome;
     }
 
-    public void addToHor(Block block){
-        horario.add(block);
+    public void addToHor(Bloco bloco){
+        horario.add(bloco);
     }
 }
