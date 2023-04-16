@@ -42,6 +42,9 @@ public class Bloco {
         this.turno = turno;
     }
 
+    public Bloco() {
+    }
+
     public String getUc() {
         return uc;
     }
@@ -99,6 +102,14 @@ public class Bloco {
     public String getHoraInicioUC() {
 
         return horaInicioUC;
+    }
+
+    public void setCurso(String curso) {
+        this.curso = curso;
+    }
+
+    public void setTurno(String turno) {
+        this.turno = turno;
     }
 
     public void setHoraInicioUC(String horaInicioUC) {

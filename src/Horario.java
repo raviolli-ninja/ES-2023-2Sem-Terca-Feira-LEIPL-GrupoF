@@ -10,7 +10,7 @@ public class Horario {
     String nome,curso;
     int numero;
 
-    List<Bloco> horario = new ArrayList<Bloco>();
+    ArrayList<Bloco> horario = new ArrayList<Bloco>();
 
     public Horario() {
 
