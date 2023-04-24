@@ -138,7 +138,7 @@ public class CsvJsonSwing extends JFrame {
              FileWriter fw = new FileWriter(outputFilename)) {
             boolean isCsv = filename.endsWith(".csv");
             StringBuilder htmlTable = new StringBuilder();
-            htmlTable.append("<html><body><table border='1'>");
+            htmlTable.append("<html><head><link rel=\"stylesheet\" href =\"styles.css\"><body><table border='1'>");
             String line;
             if (isCsv) {
                 while ((line = br.readLine()) != null) {
