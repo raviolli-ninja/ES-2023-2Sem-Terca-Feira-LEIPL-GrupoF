@@ -1,0 +1,8 @@
+1.Instalar TomCat 9 e Mave Helper (plugin do InteliJ)
+2.Lado direito no FileServer -> Run Maven -> Plugins -> Maven-war -> war:war
+3.Vai dar build de um ficheiro WAR na pasta targer
+4.Depois de instalar o tomcat e meter a password-> Ir à basta de instalação do tomcat(directory) -> bin -> startup.bat OU Canto inferior direito -> Icon do tomcat -> Start Service
+5.Ir para localhost:8080
+6.ManagerApps -> deploy war file OU ir à pasta do tomcat -> webapps -> copiar o ficheiro WAR para lá.
+7.Aquilo vai criar uma pasta com o nome do ficheiro WAR. Abrir e meter os ficheiros HTML, CSS, JS, etc lá para dentro também.
+8.Ir para localhost:8080/nome_da_pasta_que_foi_criada/main.html
