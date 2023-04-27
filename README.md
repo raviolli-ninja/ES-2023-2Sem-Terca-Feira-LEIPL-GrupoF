@@ -8,7 +8,6 @@ Jorge Hristovsky 98637 heztek8
 
 Paulo Araújo 93290 raviolli-ninja
 
-Rodrigo Barradas
 
 
 
