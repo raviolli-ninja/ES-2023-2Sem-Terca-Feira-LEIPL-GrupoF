@@ -57,7 +57,11 @@ public class CsvJsonSwing extends JFrame {
             if (result == JFileChooser.APPROVE_OPTION) {
                 String filename = fileChooser.getSelectedFile().getAbsolutePath();
                 lastLoadedFile = new File(filename); // Update the lastLoadedFile variable
-                loadFile(filename);
+                try {
+                    loadFile(filename);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         panel.add(loadButton, BorderLayout.SOUTH);
@@ -92,21 +96,46 @@ public class CsvJsonSwing extends JFrame {
     }
 
 
-    public void loadFile(String filename) {
-/*
+    public void loadFile(String filename) throws IOException {
+
         String line;
         boolean isCsv = filename.endsWith(".csv");
         if (isCsv) {
-            List<String[]> data = new ArrayList<>();
-            while ((line = br.readLine()) != null) {
-
-
-                //CSV Fix
-                String[] row = line.split(",");
-                data.add(row);
+            FileReader fileReader = new FileReader(filename);
+            Horario horario = Utils.csvToHorario(filename);
+            List<Object[]> data = new ArrayList<>();
+            List<String> columnNames = new ArrayList<>();
+            columnNames.add("uc");
+            columnNames.add("turma");
+            columnNames.add("curso");
+            columnNames.add("dia_sem");
+            columnNames.add("sala");
+            columnNames.add("maxSala");
+            columnNames.add("nInscritos");
+            columnNames.add("horaInicioUC");
+            columnNames.add("horaFimUC");
+            columnNames.add("dataAula");
+            columnNames.add("turno");
+            data.add(columnNames.toArray(new String[columnNames.size()]));
+            for (Bloco bloco : horario.horario) {
+                List<Object> row = new ArrayList<>();
+                row.add(bloco.getUc());
+                row.add(bloco.getTurma());
+                row.add(bloco.getCurso());
+                row.add(bloco.getDia_sem());
+                row.add(bloco.getSala());
+                row.add(bloco.getMaxSala());
+                row.add(bloco.getnInscritos());
+                row.add(bloco.getHoraInicioUC());
+                row.add(bloco.getHoraFimUC());
+                row.add(bloco.getDataAula());
+                row.add(bloco.getTurno());
+                data.add(row.toArray(new Object[row.size()]));
             }
+            DefaultTableModel model = new DefaultTableModel(data.toArray(new Object[0][0]), data.get(0));
+            table.setModel(model);
         } else {
-*/
+
             try {
 
                 Horario horario = Utils.parseJson(filename);
@@ -146,12 +175,10 @@ public class CsvJsonSwing extends JFrame {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Error loading file: " + ex.getMessage());
             }
-        //}
+        }
     }
 
     public void convertToHTML(String filename) throws IOException {
-
-        Horario horario = Utils.parseJson(filename);
 
         String outputFilename = filename.replace(".csv", ".html").replace(".json", ".html");
 
@@ -163,47 +190,45 @@ public class CsvJsonSwing extends JFrame {
             htmlTable.append("<html><head><link rel=\"stylesheet\" href =\"styles.css\"><body><table border='1'>");
             String line;
             if (isCsv) {
-                while ((line = br.readLine()) != null) {
-                    String[] row = line.split(",");
+
+                Horario horario = Utils.csvToHorario(filename);
+
+                Bloco firstBloco = horario.horario.get(0);
+                Field[] fields = firstBloco.getClass().getDeclaredFields();
+                htmlTable.append("<tr>");
+                for (Field field : fields) {
+                    htmlTable.append("<th>").append(field.getName()).append("</th>");
+                }
+                htmlTable.append("</tr>");
+
+                // Add table data
+                for (Bloco bloco : horario.horario) {
                     htmlTable.append("<tr>");
-                    for (String cell : row) {
-                        htmlTable.append("<td>").append(cell).append("</td>");
+                    for (Field field : fields) {
+                        String value;
+                        try {
+                            Object fieldValue = field.get(bloco);
+                            value = fieldValue == null ? "" : fieldValue.toString();
+                        } catch (IllegalAccessException e) {
+                            value = "";
+                        }
+                        htmlTable.append("<td>").append(value).append("</td>");
                     }
                     htmlTable.append("</tr>");
                 }
 
-
-
-
+                htmlTable.append("</table></body></html>");
+                fw.write(htmlTable.toString());
+                JOptionPane.showMessageDialog(this, "File has been converted to HTML successfully.\nOutput file: "
+                        + outputFilename);
+                lastLoadedFile = new File(outputFilename);
 
             } else {
 
-                // Create a new Horario instance
-                /*
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                    // Extract data from the JSON object
-                    String uc = jsonObject.getString("uc");
-                    String turma = jsonObject.getString("turma");
-                    String dia_sem = jsonObject.getString("dia_sem");
-                    String sala = jsonObject.getString("sala");
-                    int maxSala = jsonObject.getInt("maxSala");
-                    int nInscritos = jsonObject.getInt("nInscritos");
-                    String horaInicioUC = jsonObject.getString("horaInicioUC");
-                    String horaFimUC = jsonObject.getString("horaFimUC");
-                    String dataAula = jsonObject.getString("dataAula");
-                    String curso = jsonObject.optString("curso", "");
-
-                    // Create a new Bloco instance and add it to the Horario object
-                    Bloco bloco = new Bloco(uc, turma, dia_sem, sala, maxSala, nInscritos, horaInicioUC, horaFimUC, dataAula, curso);
-                    horario.addToHor(bloco);
-                }
-                */
-
+                Horario horario = Utils.parseJson(filename);
 
                 // Generate HTML table from Horario object
-                htmlTable = new StringBuilder("<html><head><title>" + horario.nome + "</title></head><body><table>");
+                htmlTable = new StringBuilder("<html><head><link rel=\"stylesheet\" href =\"styles.css\"></head><title>" + horario.nome + "</title><body><table border='1'>");
 
                 if (horario.horario.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "No data available");

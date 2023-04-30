@@ -28,9 +28,9 @@ public class CSVToJsonConverter {
                 String sala = values[9];
                 int maxsala = Integer.parseInt(values[10]);
                 //Block(String uc, String turma, String dia_sem, String sala, int maxSala, int nInscritos, String horaInicioUC, String horaFimUC, String dataAula)
-                Bloco bloco = new Bloco(UC, turma, dia_sem, sala, maxsala, nInscritos, horaInicioUC, horaFimUC, dataAula);
-                System.out.println(bloco);
-                horario.addToHor(bloco);
+                //Bloco bloco = new Bloco(UC, turma, dia_sem, sala, maxsala, nInscritos, horaInicioUC, horaFimUC, dataAula);
+                //System.out.println(bloco);
+                //horario.addToHor(bloco);
             }
 
         } catch (IOException e) {
