@@ -1,3 +1,5 @@
+package src;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -6,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -90,50 +93,69 @@ public class CsvJsonSwing extends JFrame {
 
 
     public void loadFile(String filename) {
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+/*
+        String line;
+        boolean isCsv = filename.endsWith(".csv");
+        if (isCsv) {
             List<String[]> data = new ArrayList<>();
-            String line;
-            boolean isCsv = filename.endsWith(".csv");
-            if (isCsv) {
-                while ((line = br.readLine()) != null) {
-                    String[] row = line.split(",");
-                    data.add(row);
-                }
-            } else {
-                JSONTokener tokener = new JSONTokener(new FileReader(filename));
-                JSONArray jsonArray = new JSONArray(tokener);
-                if (jsonArray.length() == 0) {
-                    JOptionPane.showMessageDialog(this, "File is empty");
-                    return;
-                }
-                JSONObject firstObject = jsonArray.getJSONObject(0);
-                Iterator<?> keys = firstObject.keys();
-                List<String> columnNames = new ArrayList<>();
-                while (keys.hasNext()) {
-                    String key = (String) keys.next();
-                    columnNames.add(key);
-                }
-                data.add(columnNames.toArray(new String[columnNames.size()]));
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    List<String> row = new ArrayList<>();
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    for (String columnName : columnNames) {
-                        String value = jsonObject.optString(columnName);
-                        row.add(value);
-                    }
-                    data.add(row.toArray(new String[row.size()]));
-                }
+            while ((line = br.readLine()) != null) {
+
+
+                //CSV Fix
+                String[] row = line.split(",");
+                data.add(row);
             }
-            DefaultTableModel model = new DefaultTableModel(data.toArray(new Object[0][0]), data.get(0));
-            table.setModel(model);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading file: " + ex.getMessage());
-        }
+        } else {
+*/
+            try {
+
+                Horario horario = Utils.parseJson(filename);
+
+                List<Object[]> data = new ArrayList<>();
+                List<String> columnNames = new ArrayList<>();
+                columnNames.add("uc");
+                columnNames.add("turma");
+                columnNames.add("curso");
+                columnNames.add("dia_sem");
+                columnNames.add("sala");
+                columnNames.add("maxSala");
+                columnNames.add("nInscritos");
+                columnNames.add("horaInicioUC");
+                columnNames.add("horaFimUC");
+                columnNames.add("dataAula");
+                columnNames.add("turno");
+                data.add(columnNames.toArray(new String[columnNames.size()]));
+                for (Bloco bloco : horario.horario) {
+                    List<Object> row = new ArrayList<>();
+                    row.add(bloco.getUc());
+                    row.add(bloco.getTurma());
+                    row.add(bloco.getCurso());
+                    row.add(bloco.getDia_sem());
+                    row.add(bloco.getSala());
+                    row.add(bloco.getMaxSala());
+                    row.add(bloco.getnInscritos());
+                    row.add(bloco.getHoraInicioUC());
+                    row.add(bloco.getHoraFimUC());
+                    row.add(bloco.getDataAula());
+                    row.add(bloco.getTurno());
+                    data.add(row.toArray(new Object[row.size()]));
+                }
+                DefaultTableModel model = new DefaultTableModel(data.toArray(new Object[0][0]), data.get(0));
+                table.setModel(model);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error loading file: " + ex.getMessage());
+            }
+        //}
     }
 
     public void convertToHTML(String filename) throws IOException {
+
+        Horario horario = Utils.parseJson(filename);
+
         String outputFilename = filename.replace(".csv", ".html").replace(".json", ".html");
+
+
         try (BufferedReader br = new BufferedReader(new FileReader(filename));
              FileWriter fw = new FileWriter(outputFilename)) {
             boolean isCsv = filename.endsWith(".csv");
@@ -149,40 +171,79 @@ public class CsvJsonSwing extends JFrame {
                     }
                     htmlTable.append("</tr>");
                 }
+
+
+
+
+
             } else {
-                JSONTokener tokener = new JSONTokener(new FileReader(filename));
-                JSONArray jsonArray = new JSONArray(tokener);
-                if (jsonArray.length() == 0) {
-                    JOptionPane.showMessageDialog(this, "File is empty");
-                    return;
-                }
-                JSONObject firstObject = jsonArray.getJSONObject(0);
-                Iterator<?> keys = firstObject.keys();
-                htmlTable.append("<tr>");
-                while (keys.hasNext()) {
-                    String key = (String) keys.next();
-                    htmlTable.append("<th>").append(key).append("</th>");
-                }
-                htmlTable.append("</tr>");
+
+                // Create a new Horario instance
+                /*
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                    // Extract data from the JSON object
+                    String uc = jsonObject.getString("uc");
+                    String turma = jsonObject.getString("turma");
+                    String dia_sem = jsonObject.getString("dia_sem");
+                    String sala = jsonObject.getString("sala");
+                    int maxSala = jsonObject.getInt("maxSala");
+                    int nInscritos = jsonObject.getInt("nInscritos");
+                    String horaInicioUC = jsonObject.getString("horaInicioUC");
+                    String horaFimUC = jsonObject.getString("horaFimUC");
+                    String dataAula = jsonObject.getString("dataAula");
+                    String curso = jsonObject.optString("curso", "");
+
+                    // Create a new Bloco instance and add it to the Horario object
+                    Bloco bloco = new Bloco(uc, turma, dia_sem, sala, maxSala, nInscritos, horaInicioUC, horaFimUC, dataAula, curso);
+                    horario.addToHor(bloco);
+                }
+                */
+
+
+                // Generate HTML table from Horario object
+                htmlTable = new StringBuilder("<html><head><title>" + horario.nome + "</title></head><body><table>");
+
+                if (horario.horario.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "No data available");
+                    return;
+                }
+
+                // Add table headers
+                Bloco firstBloco = horario.horario.get(0);
+                Field[] fields = firstBloco.getClass().getDeclaredFields();
+                htmlTable.append("<tr>");
+                for (Field field : fields) {
+                    htmlTable.append("<th>").append(field.getName()).append("</th>");
+                }
+                htmlTable.append("</tr>");
+
+                // Add table data
+                for (Bloco bloco : horario.horario) {
                     htmlTable.append("<tr>");
-                    keys = jsonObject.keys();
-                    while (keys.hasNext()) {
-                        String key = (String) keys.next();
-                        String value = jsonObject.getString(key);
+                    for (Field field : fields) {
+                        String value;
+                        try {
+                            Object fieldValue = field.get(bloco);
+                            value = fieldValue == null ? "" : fieldValue.toString();
+                        } catch (IllegalAccessException e) {
+                            value = "";
+                        }
                         htmlTable.append("<td>").append(value).append("</td>");
                     }
                     htmlTable.append("</tr>");
                 }
-            }
-            htmlTable.append("</table></body></html>");
-            fw.write(htmlTable.toString());
-            JOptionPane.showMessageDialog(this, "File has been converted to HTML successfully.\nOutput file: "
-                    + outputFilename);
 
-            // Update the lastLoadedFile variable
-            lastLoadedFile = new File(outputFilename);
+
+                htmlTable.append("</table></body></html>");
+                fw.write(htmlTable.toString());
+                JOptionPane.showMessageDialog(this, "File has been converted to HTML successfully.\nOutput file: "
+                        + outputFilename);
+
+                // Update the lastLoadedFile variable
+                lastLoadedFile = new File(outputFilename);
+            }
         } catch (IOException e) {
             throw new IOException("Error converting file to HTML: " + e.getMessage());
         }

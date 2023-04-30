@@ -8,10 +8,6 @@
     <artifactId>ES-2023-2Sem-Terca-Feira-LEIPL-GrupoF</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <modules>
-        <module>src</module>
-    </modules>
-
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -25,6 +21,11 @@
             <version>1.1.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20201115</version>
+        </dependency>
 
     </dependencies>
 
