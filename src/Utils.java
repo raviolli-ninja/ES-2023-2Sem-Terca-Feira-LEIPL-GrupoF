@@ -1,10 +1,12 @@
 package src;
 import com.google.gson.*;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.io.BufferedReader;
 
 
 public class Utils {
@@ -76,6 +78,35 @@ public class Utils {
         writer.close();
     }
 
+    public static Horario csvToHorario(String arquivoCSV) throws IOException {
+        Horario horario = new Horario();
+        BufferedReader br = new BufferedReader(new FileReader(arquivoCSV));
+        String linha = br.readLine(); // pula a linha de cabeçalho do arquivo
+        while ((linha = br.readLine()) != null) {
+            String[] campos = linha.split(",");
+
+            String curso = campos[0];
+            String uc = campos[1];
+            String turma = campos[3];
+            String diaSem = campos[5];
+            String sala = campos[9];
+            int maxSala = Integer.parseInt(campos[10]);
+            int nInscritos = Integer.parseInt(campos[4]);
+            String horaInicioUC = campos[6];
+            String horaFimUC = campos[7];
+            String dataAula = campos[8];
+            String turno = campos[2];
+
+            Bloco bloco = new Bloco(curso,turno, uc,  turma,  diaSem, sala,  maxSala,nInscritos, horaInicioUC, horaFimUC, dataAula);
+            horario.addToHor(bloco);
+        }
+
+        br.close();
+
+        return horario;
+    }
+
+
     public static Horario parseJson(String filename) {
         Gson gson = new Gson();
         Horario horario = new Horario();
@@ -114,6 +145,9 @@ public class Utils {
             return null;
         }
     }
+
+
+
 
 
 

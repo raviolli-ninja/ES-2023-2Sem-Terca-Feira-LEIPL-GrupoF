@@ -14,7 +14,7 @@ public class Bloco {
 
 
 
-    public Bloco(String uc, String turma, String dia_sem, String sala, int maxSala, int nInscritos, String horaInicioUC, String horaFimUC, String dataAula) {
+    public Bloco(String curso,String turno,String uc, String turma, String dia_sem, String sala, int maxSala, int nInscritos, String horaInicioUC, String horaFimUC, String dataAula) {
 
         this.uc = uc;
         this.turma = turma;
@@ -41,6 +41,10 @@ public class Bloco {
         this.dataAula = dataAula;
         this.turno = turno;
     }
+
+
+
+
 
     public Bloco() {
     }
