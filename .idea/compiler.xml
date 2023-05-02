@@ -4,5 +4,17 @@
     <excludeFromCompile>
       <directory url="file://$PROJECT_DIR$/src/src/main/resources/archetype-resources" includeSubdirectories="true" />
     </excludeFromCompile>
+
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="src" target="1.8" />
+    </bytecodeTargetLevel>
+
   </component>
 </project>
