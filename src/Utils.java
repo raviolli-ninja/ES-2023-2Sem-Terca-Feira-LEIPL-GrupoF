@@ -1,10 +1,7 @@
 package src;
 import com.google.gson.*;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.io.BufferedReader;
 
@@ -148,6 +145,21 @@ public class Utils {
 
 
 
+    public static String readFile(String filePath) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        StringBuilder content = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            content.append(line).append("\n");
+        }
+        reader.close();
+        return content.toString();
+    }
+
+    public static void deleteFile(String filePath) {
+        File file = new File(filePath);
+        file.delete();
+    }
 
 
 
