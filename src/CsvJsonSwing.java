@@ -1,14 +1,9 @@
 package src;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,16 +14,10 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 public class CsvJsonSwing extends JFrame {
 
@@ -50,7 +39,7 @@ public class CsvJsonSwing extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         add(panel);
-
+        JPanel subPanel = new JPanel();
         // Table for schedule
         table = new JTable();
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
@@ -70,8 +59,7 @@ public class CsvJsonSwing extends JFrame {
                 }
             }
         });
-        panel.add(loadButton, BorderLayout.SOUTH);
-
+        subPanel.add(loadButton);
 
         //SORTING BOX
         String[] sortOptions = {"Sort by Day", "Sort by Week", "Sort by Month"};
@@ -118,6 +106,30 @@ public class CsvJsonSwing extends JFrame {
             }
         });
         panel.add(sortComboBox, BorderLayout.NORTH);
+
+        JButton loadFromUriButton = new JButton("Load from URI");
+        loadFromUriButton.addActionListener(e -> {
+            String uri = JOptionPane.showInputDialog(this, "Enter URI:");
+            if (uri != null) {
+                loadFileFromUri(uri);
+            }else{
+                JOptionPane.showMessageDialog(this, "Null input.");
+            }
+        });
+
+        subPanel.add(loadFromUriButton);
+        panel.add(subPanel, BorderLayout.SOUTH);
+
+    }
+
+    private void loadFileFromUri(String uri) {
+
+
+
+
+
+
+
 
     }
 
