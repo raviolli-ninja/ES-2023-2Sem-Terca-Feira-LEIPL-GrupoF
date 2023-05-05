@@ -19,11 +19,15 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 public class CsvJsonSwing extends JFrame {
 
@@ -41,7 +45,11 @@ public class CsvJsonSwing extends JFrame {
 
     private JComboBox<String> sortComboBox;
 
-    public CsvJsonSwing() {
+    Horario horario;
+
+    String source ;
+
+    public CsvJsonSwing()  {
 
         super("ISCTE Schedule Generator");
 
@@ -58,6 +66,9 @@ public class CsvJsonSwing extends JFrame {
         convertHTMLButton();
         openConvertedFileButton();
         loadFromURIButton();
+        setOverlapButton();
+        setOvercrowdingButton();
+
 
         //Sorting
         String[] sortOptions = {"Sort by Day", "Sort by Week", "Sort by Month"};
@@ -65,9 +76,66 @@ public class CsvJsonSwing extends JFrame {
         setSortComboBoxWindow();
 
     }
+    public void loadFile(String filename) throws IOException {
+        source = filename;
+        boolean isCsv = filename.endsWith(".csv");
+        if (isCsv) {
+            horario = Utils.csvToHorario(filename);
+        }
+        else {
+            horario = Utils.parseJson(filename);
+        }
+        DefaultTableModel model = getModel();
+        displayModel(model);
 
-    public void loadFileFromUri(String uri) {
-        try {
+
+    }
+
+    public DefaultTableModel getModel(){
+        List<Object[]> data = new ArrayList<>();
+        List<String> columnNames = new ArrayList<>();
+
+        //Método auxiliar para adicionar colunas
+        columnAdder((ArrayList<String>) columnNames);
+
+
+        data.add(columnNames.toArray(new String[columnNames.size()]));
+        for (Bloco bloco : horario.horario) {
+            List<Object> row = new ArrayList<>();
+            row.add(bloco.getUc());
+            row.add(bloco.getTurma());
+            row.add(bloco.getCurso());
+            row.add(bloco.getDia_sem());
+            row.add(bloco.getSala());
+            row.add(bloco.getMaxSala());
+            row.add(bloco.getnInscritos());
+            row.add(bloco.getHoraInicioUC());
+            row.add(bloco.getHoraFimUC());
+            row.add(bloco.getDataAula());
+            row.add(bloco.getTurno());
+            data.add(row.toArray(new Object[row.size()]));
+        }
+        DefaultTableModel model = new DefaultTableModel(data.toArray(new Object[0][0]), data.get(0));
+        model.removeRow(0);
+       return model;
+    }
+
+    public void displayModel(DefaultTableModel model){
+        table.setModel(model);
+    }
+
+
+
+
+
+
+
+
+
+
+    public void loadFileFromUri(String uri) throws IOException, ParserException {
+        source = uri;
+//        try {
             if (uri.startsWith("https://")) {
                 CalendarBuilder builder = new CalendarBuilder();
                 Calendar calendar = builder.build(new URL(uri).openStream());
@@ -89,13 +157,13 @@ public class CsvJsonSwing extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(this,"Invalid Protocol. Only https:// is supported. If using webcal link please change the start to https://. Webcal is not secured and is not supported by the IANA.");
             }
-        } catch (MalformedURLException e) {
-            JOptionPane.showMessageDialog(this, "Invalid URI: " + uri);
-            e.printStackTrace();
-        } catch (IOException | ParserException e) {
-            JOptionPane.showMessageDialog(this, "Error loading file from URI: " + e.getMessage());
-            e.printStackTrace();
-        }
+//        } catch (MalformedURLException e) {
+//            JOptionPane.showMessageDialog(this, "Invalid URI: " + uri);
+//            e.printStackTrace();
+//        } catch (IOException | ParserException e) {
+//            JOptionPane.showMessageDialog(this, "Error loading file from URI: " + e.getMessage());
+//            e.printStackTrace();
+//        }
     }
 
 
@@ -154,72 +222,7 @@ public class CsvJsonSwing extends JFrame {
 
 
 
-    public void loadFile(String filename) throws IOException {
 
-        String line;
-        boolean isCsv = filename.endsWith(".csv");
-        if (isCsv) {
-            FileReader fileReader = new FileReader(filename);
-            Horario horario = Utils.csvToHorario(filename);
-            List<Object[]> data = new ArrayList<>();
-            List<String> columnNames = new ArrayList<>();
-
-            //Método auxiliar para adicionar colunas
-            columnAdder((ArrayList<String>) columnNames);
-
-
-            data.add(columnNames.toArray(new String[columnNames.size()]));
-            for (Bloco bloco : horario.horario) {
-                List<Object> row = new ArrayList<>();
-                row.add(bloco.getUc());
-                row.add(bloco.getTurma());
-                row.add(bloco.getCurso());
-                row.add(bloco.getDia_sem());
-                row.add(bloco.getSala());
-                row.add(bloco.getMaxSala());
-                row.add(bloco.getnInscritos());
-                row.add(bloco.getHoraInicioUC());
-                row.add(bloco.getHoraFimUC());
-                row.add(bloco.getDataAula());
-                row.add(bloco.getTurno());
-                data.add(row.toArray(new Object[row.size()]));
-            }
-            DefaultTableModel model = new DefaultTableModel(data.toArray(new Object[0][0]), data.get(0));
-            table.setModel(model);
-        } else {
-
-            try {
-                Horario horario = Utils.parseJson(filename);
-                List<Object[]> data = new ArrayList<>();
-                List<String> columnNames = new ArrayList<>();
-
-                //Método auxiliar para adicionar colunas
-                columnAdder((ArrayList<String>) columnNames);
-
-                data.add(columnNames.toArray(new String[columnNames.size()]));
-                for (Bloco bloco : horario.horario) {
-                    List<Object> row = new ArrayList<>();
-                    row.add(bloco.getUc());
-                    row.add(bloco.getTurma());
-                    row.add(bloco.getCurso());
-                    row.add(bloco.getDia_sem());
-                    row.add(bloco.getSala());
-                    row.add(bloco.getMaxSala());
-                    row.add(bloco.getnInscritos());
-                    row.add(bloco.getHoraInicioUC());
-                    row.add(bloco.getHoraFimUC());
-                    row.add(bloco.getDataAula());
-                    row.add(bloco.getTurno());
-                    data.add(row.toArray(new Object[row.size()]));
-                }
-                DefaultTableModel model = new DefaultTableModel(data.toArray(new Object[0][0]), data.get(0));
-                table.setModel(model);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Error loading file: " + ex.getMessage());
-            }
-        }
-    }
 
 
     private void convertToHTML(String filename, int sortOption) throws IOException {
@@ -294,6 +297,120 @@ public class CsvJsonSwing extends JFrame {
         JOptionPane.showMessageDialog(this, "File converted successfully: " + path.toAbsolutePath());
     }
 
+
+
+    /********************************************************************
+     * TIRAR DAQUI                                                      *
+     ********************************************************************/
+
+    public ArrayList getOverCrowded(){
+        ArrayList<Integer> index = new ArrayList<Integer>();
+        for (Bloco bloco : horario.horario) {
+            if (bloco.getMaxSala()< bloco.nInscritos){
+                index.add(horario.horario.indexOf(bloco));
+            }
+        }
+       return index;
+    }
+
+    public ArrayList getOverlap (Horario horario){
+        ArrayList<Integer> index = new ArrayList<Integer>() ;
+        List<Bloco> blocos = horario.horario;
+
+        for (int i = 0; i < blocos.size(); i++) {
+            Bloco bloco1 = blocos.get(i);
+            for (int j = i + 1; j < blocos.size(); j++) {
+                Bloco bloco2 = blocos.get(j);
+                if (bloco1.getDataAula().equals(bloco2.getDataAula()) &&
+                        bloco1.getHoraInicioUC().equals(bloco2.getHoraInicioUC()) &&
+                        bloco1.getSala().equals(bloco2.getSala())) {
+                    index.add(blocos.indexOf(bloco1));
+                    index.add(blocos.indexOf(bloco2));
+                }
+            }
+        }
+
+        return index;
+    }
+
+
+    public void setOverlap() {
+        sortByDate();
+        ArrayList<Integer> indexList = getOverlap(horario);
+
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setBackground(Color.RED);
+
+        for (int i = 0; i < indexList.size(); i++) {
+            int rowIndex = indexList.get(i);
+            for (int j = 0; j < table.getColumnCount(); j++) {
+                table.getCellRenderer(rowIndex, j).getTableCellRendererComponent(table, table.getValueAt(rowIndex, j), false, false, rowIndex, j).setBackground(Color.RED);
+            }
+            model.fireTableRowsUpdated(rowIndex, rowIndex);
+        }
+    }
+
+    public void setOvercrowding() {
+        sortByDate();
+        ArrayList<Integer> indexList =getOverCrowded();
+
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setBackground(Color.BLUE);
+
+        for (int i = 0; i < indexList.size(); i++) {
+            int rowIndex = indexList.get(i);
+            for (int j = 0; j < table.getColumnCount(); j++) {
+                table.getCellRenderer(rowIndex, j).getTableCellRendererComponent(table, table.getValueAt(rowIndex, j), false, false, rowIndex, j).setBackground(new Color(51,153,255));
+            }
+            model.fireTableRowsUpdated(rowIndex, rowIndex);
+        }
+    }
+
+    private void sortByDate() {
+        ArrayList<Bloco> blocos = horario.horario;
+        Collections.sort(blocos, new Comparator<Bloco>() {
+            public int compare(Bloco b1, Bloco b2) {
+                int dataComp = b1.getDataAula().compareTo(b2.getDataAula());
+                if (dataComp == 0) {
+                    int horaComp = b1.getHoraInicioUC().compareTo(b2.getHoraInicioUC());
+                    return horaComp;
+                }
+                return dataComp;
+            }
+        });
+
+    }
+
+    /*public  DefaultTableModel tableTOModel(){
+        TableModel model =table.getModel();
+        DefaultTableModel defaultModel = new DefaultTableModel();
+        for (int i = 0; i < model.getColumnCount(); i++) {
+           defaultModel.addColumn(model.getColumnName(i));
+        }
+        for (int i = 0; i < model.getRowCount(); i++) {
+            Object[] row = new Object[model.getColumnCount()];
+            for (int j = 0; j < model.getColumnCount(); j++) {
+                row[j] = model.getValueAt(i, j);
+            }
+            defaultModel.addRow(row);
+        }
+
+        return defaultModel;
+
+    }*/
+
+
+
+
+
+
+
+
+
+
+
     /********************************************************************
      * SWING CODE (functions for GUI, auxiliary functincs, buttons, etc)*
      ********************************************************************/
@@ -313,7 +430,7 @@ public class CsvJsonSwing extends JFrame {
     }
 
 
-    public void loadFileButton(){
+    public void loadFileButton() {
         JButton loadButton = new JButton("Load File");
         loadButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
@@ -396,6 +513,27 @@ public class CsvJsonSwing extends JFrame {
         panel.add(subPanel, BorderLayout.SOUTH);
 
     }
+    public void setOverlapButton(){
+        JButton loadFromUriButton = new JButton("Aulas sobrepostas");
+        loadFromUriButton.addActionListener(e -> {
+           setOverlap();
+        });
+
+        subPanel.add(loadFromUriButton);
+        panel.add(subPanel, BorderLayout.SOUTH);
+
+    }
+    public void setOvercrowdingButton(){
+        JButton loadFromUriButton = new JButton("Aulas Sobrelotadas");
+        loadFromUriButton.addActionListener(e -> {
+            setOvercrowding();
+        });
+
+        subPanel.add(loadFromUriButton);
+        panel.add(subPanel, BorderLayout.SOUTH);
+
+    }
+
 
     /********************************************************************
      * Auxiliary Functions                                              *
