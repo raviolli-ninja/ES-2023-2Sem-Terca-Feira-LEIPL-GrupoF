@@ -66,8 +66,7 @@ public class CsvJsonSwing extends JFrame {
         convertHTMLButton();
         openConvertedFileButton();
         loadFromURIButton();
-        setOverlapButton();
-        setOvercrowdingButton();
+
 
 
         //Sorting
@@ -133,9 +132,9 @@ public class CsvJsonSwing extends JFrame {
 
 
 
-    public void loadFileFromUri(String uri) throws IOException, ParserException {
+    public void loadFileFromUri(String uri) {
         source = uri;
-//        try {
+        try {
             if (uri.startsWith("https://")) {
                 CalendarBuilder builder = new CalendarBuilder();
                 Calendar calendar = builder.build(new URL(uri).openStream());
@@ -157,13 +156,13 @@ public class CsvJsonSwing extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(this,"Invalid Protocol. Only https:// is supported. If using webcal link please change the start to https://. Webcal is not secured and is not supported by the IANA.");
             }
-//        } catch (MalformedURLException e) {
-//            JOptionPane.showMessageDialog(this, "Invalid URI: " + uri);
-//            e.printStackTrace();
-//        } catch (IOException | ParserException e) {
-//            JOptionPane.showMessageDialog(this, "Error loading file from URI: " + e.getMessage());
-//            e.printStackTrace();
-//        }
+        } catch (MalformedURLException e) {
+            JOptionPane.showMessageDialog(this, "Invalid URI: " + uri);
+            e.printStackTrace();
+        } catch (IOException | ParserException e) {
+            JOptionPane.showMessageDialog(this, "Error loading file from URI: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 
@@ -299,89 +298,7 @@ public class CsvJsonSwing extends JFrame {
 
 
 
-    /********************************************************************
-     * TIRAR DAQUI                                                      *
-     ********************************************************************/
 
-    public ArrayList getOverCrowded(){
-        ArrayList<Integer> index = new ArrayList<Integer>();
-        for (Bloco bloco : horario.horario) {
-            if (bloco.getMaxSala()< bloco.nInscritos){
-                index.add(horario.horario.indexOf(bloco));
-            }
-        }
-       return index;
-    }
-
-    public ArrayList getOverlap (Horario horario){
-        ArrayList<Integer> index = new ArrayList<Integer>() ;
-        List<Bloco> blocos = horario.horario;
-
-        for (int i = 0; i < blocos.size(); i++) {
-            Bloco bloco1 = blocos.get(i);
-            for (int j = i + 1; j < blocos.size(); j++) {
-                Bloco bloco2 = blocos.get(j);
-                if (bloco1.getDataAula().equals(bloco2.getDataAula()) &&
-                        bloco1.getHoraInicioUC().equals(bloco2.getHoraInicioUC()) &&
-                        bloco1.getSala().equals(bloco2.getSala())) {
-                    index.add(blocos.indexOf(bloco1));
-                    index.add(blocos.indexOf(bloco2));
-                }
-            }
-        }
-
-        return index;
-    }
-
-
-    public void setOverlap() {
-        sortByDate();
-        ArrayList<Integer> indexList = getOverlap(horario);
-
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setBackground(Color.RED);
-
-        for (int i = 0; i < indexList.size(); i++) {
-            int rowIndex = indexList.get(i);
-            for (int j = 0; j < table.getColumnCount(); j++) {
-                table.getCellRenderer(rowIndex, j).getTableCellRendererComponent(table, table.getValueAt(rowIndex, j), false, false, rowIndex, j).setBackground(Color.RED);
-            }
-            model.fireTableRowsUpdated(rowIndex, rowIndex);
-        }
-    }
-
-    public void setOvercrowding() {
-        sortByDate();
-        ArrayList<Integer> indexList =getOverCrowded();
-
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setBackground(Color.BLUE);
-
-        for (int i = 0; i < indexList.size(); i++) {
-            int rowIndex = indexList.get(i);
-            for (int j = 0; j < table.getColumnCount(); j++) {
-                table.getCellRenderer(rowIndex, j).getTableCellRendererComponent(table, table.getValueAt(rowIndex, j), false, false, rowIndex, j).setBackground(new Color(51,153,255));
-            }
-            model.fireTableRowsUpdated(rowIndex, rowIndex);
-        }
-    }
-
-    private void sortByDate() {
-        ArrayList<Bloco> blocos = horario.horario;
-        Collections.sort(blocos, new Comparator<Bloco>() {
-            public int compare(Bloco b1, Bloco b2) {
-                int dataComp = b1.getDataAula().compareTo(b2.getDataAula());
-                if (dataComp == 0) {
-                    int horaComp = b1.getHoraInicioUC().compareTo(b2.getHoraInicioUC());
-                    return horaComp;
-                }
-                return dataComp;
-            }
-        });
-
-    }
 
     /*public  DefaultTableModel tableTOModel(){
         TableModel model =table.getModel();
@@ -507,26 +424,6 @@ public class CsvJsonSwing extends JFrame {
             }else{
                 JOptionPane.showMessageDialog(this, "Null input, no preview generated.");
             }
-        });
-
-        subPanel.add(loadFromUriButton);
-        panel.add(subPanel, BorderLayout.SOUTH);
-
-    }
-    public void setOverlapButton(){
-        JButton loadFromUriButton = new JButton("Aulas sobrepostas");
-        loadFromUriButton.addActionListener(e -> {
-           setOverlap();
-        });
-
-        subPanel.add(loadFromUriButton);
-        panel.add(subPanel, BorderLayout.SOUTH);
-
-    }
-    public void setOvercrowdingButton(){
-        JButton loadFromUriButton = new JButton("Aulas Sobrelotadas");
-        loadFromUriButton.addActionListener(e -> {
-            setOvercrowding();
         });
 
         subPanel.add(loadFromUriButton);
