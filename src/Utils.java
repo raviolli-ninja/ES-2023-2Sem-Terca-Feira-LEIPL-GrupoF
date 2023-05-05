@@ -1,12 +1,17 @@
 package src;
 import com.google.gson.*;
 
-import java.io.BufferedReader;
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.io.BufferedReader;
+import java.util.Collections;
+import java.util.Comparator;
 
 
 public class Utils {
@@ -147,14 +152,88 @@ public class Utils {
     }
 
 
+    /***********************************************************************************
+     *
+     * Engine para o display
+     */
 
+    private void sortByDate(Horario horario) {
+        ArrayList<Bloco> blocos = horario.horario;
+        Collections.sort(blocos, new Comparator<Bloco>() {
+            public int compare(Bloco b1, Bloco b2) {
+                int dataComp = b1.getDataAula().compareTo(b2.getDataAula());
+                if (dataComp == 0) {
+                    int horaComp = b1.getHoraInicioUC().compareTo(b2.getHoraInicioUC());
+                    return horaComp;
+                }
+                return dataComp;
+            }
+        });
 
+    }
+    public ArrayList getOverCrowded(Horario horario){
+        ArrayList<Integer> index = new ArrayList<Integer>();
+        for (Bloco bloco : horario.horario) {
+            if (bloco.getMaxSala()< bloco.nInscritos){
+                index.add(horario.horario.indexOf(bloco));
+            }
+        }
+        return index;
+    }
 
+    public void setOverCrowded(Horario horario , JTable table) {
+        sortByDate(horario);
+        ArrayList<Integer> indexList =getOverCrowded(horario);
 
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setBackground(Color.BLUE);
 
+        for (int i = 0; i < indexList.size(); i++) {
+            int rowIndex = indexList.get(i);
+            for (int j = 0; j < table.getColumnCount(); j++) {
+                table.getCellRenderer(rowIndex, j).getTableCellRendererComponent(table, table.getValueAt(rowIndex, j), false, false, rowIndex, j).setBackground(new Color(51,153,255));
+            }
+            model.fireTableRowsUpdated(rowIndex, rowIndex);
+        }
+    }
 
+    public ArrayList getOverlap (Horario horario){
+        ArrayList<Integer> index = new ArrayList<Integer>() ;
+        ArrayList<Bloco> blocos = horario.horario;
 
+        for (int i = 0; i < blocos.size(); i++) {
+            Bloco bloco1 = blocos.get(i);
+            for (int j = i + 1; j < blocos.size(); j++) {
+                Bloco bloco2 = blocos.get(j);
+                if (bloco1.getDataAula().equals(bloco2.getDataAula()) &&
+                        bloco1.getHoraInicioUC().equals(bloco2.getHoraInicioUC()) &&
+                        bloco1.getSala().equals(bloco2.getSala())) {
+                    index.add(blocos.indexOf(bloco1));
+                    index.add(blocos.indexOf(bloco2));
+                }
+            }
+        }
 
+        return index;
+    }
+
+    public void setOverlap(Horario horario , JTable table) {
+        sortByDate(horario);
+        ArrayList<Integer> indexList = getOverlap(horario);
+
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setBackground(Color.RED);
+
+        for (int i = 0; i < indexList.size(); i++) {
+            int rowIndex = indexList.get(i);
+            for (int j = 0; j < table.getColumnCount(); j++) {
+                table.getCellRenderer(rowIndex, j).getTableCellRendererComponent(table, table.getValueAt(rowIndex, j), false, false, rowIndex, j).setBackground(Color.RED);
+            }
+            model.fireTableRowsUpdated(rowIndex, rowIndex);
+        }
+    }
 
     public static void main(String[] args) throws IOException {
         Horario horario = new Horario();
