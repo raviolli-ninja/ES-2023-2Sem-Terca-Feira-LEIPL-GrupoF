@@ -380,7 +380,8 @@ public class CsvJsonSwing extends JFrame {
         loadFromUriButton.addActionListener(e -> {
             String uri = JOptionPane.showInputDialog(this, "Enter URI (use https:// instead of webcal:// for security reasons):");
             if (uri != null) {
-                loadFileFromUri(uri);
+                //loadFileFromUri(uri);
+                displayModel(getModel(Utils.fromWebcalToHorario(uri)));
             }else{
                 JOptionPane.showMessageDialog(this, "Null input, no preview generated.");
             }
@@ -558,59 +559,6 @@ public class CsvJsonSwing extends JFrame {
         columnNames.add("dataAula");
         columnNames.add("turno");
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //Para mostrar que http não funciona pois o link é movido para https e altera o conteudo para html e o parser do iCalendar não funciona
-    //Webcal também não funciona pois não é um protocolo reconhecido pela IANA logo dava o erro de URLMalformation e tinha de usar várias libraries para contornar isso e ainda por cima era depois traduzido para HTTPS
-    //logo não faz sentido usar webcal sequer.
-    /*private void loadFileFromUri2(String uri) {
-        try {
-            URL url = new URL(uri);
-            URLConnection connection = url.openConnection();
-            if (uri.startsWith("webcal://")) {
-                String httpUrl = connection.getHeaderField("Location");
-                connection = new URL(httpUrl).openConnection();
-            }
-            InputStream inputStream = connection.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            List<String[]> data = new ArrayList<>();
-            while ((line = reader.readLine()) != null) {
-                String[] fields = line.split(",");
-                data.add(fields);
-            }
-            reader.close();
-            inputStream.close();
-
-            String[] headers = data.remove(0);
-            DefaultTableModel model = new DefaultTableModel(headers, 0);
-            for (String[] row : data) {
-                model.addRow(row);
-            }
-            table.setModel(model);
-
-        } catch (MalformedURLException e) {
-            JOptionPane.showMessageDialog(this, "Invalid URI: " + uri);
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error loading file from URI: " + e.getMessage());
-        }
-    }
-    */
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

@@ -1,20 +1,28 @@
 package src;
 import com.google.gson.*;
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.CalendarParserImpl;
+import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.CalendarException;
+import net.fortuna.ical4j.model.Component;
+import net.fortuna.ical4j.model.ComponentList;
+import net.fortuna.ical4j.model.Date;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.util.CompatibilityHints;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.net.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.io.BufferedReader;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.List;
+
+import static javax.xml.bind.DatatypeConverter.parseDateTime;
 
 
 public class Utils {
@@ -114,6 +122,44 @@ public class Utils {
         return horario;
     }
 
+
+    public static Horario fromWebcalToHorario (String uri) {
+        Horario horario = new Horario();
+        SimpleDateFormat outputTimeFormat = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String httpsString = uri.replaceFirst("webcal://", "https://");
+        try {
+                CalendarBuilder builder = new CalendarBuilder();
+                net.fortuna.ical4j.model.Calendar calendar = builder.build(new URL(httpsString).openStream());
+                List<String[]> data = new ArrayList<>();
+                for (Object event : calendar.getComponents(Component.VEVENT)) {
+                    String nome = ((VEvent) event).getSummary().getValue();
+                    String curso = "N/A";
+                    Date dataInicioCompleta = ((VEvent) event).getStartDate().getDate();
+                    Date dataFimCompleta = ((VEvent) event).getEndDate().getDate();
+                    String dataAula = outputDateFormat.format(dataInicioCompleta);
+                    String horaInicioUC = outputTimeFormat.format(dataInicioCompleta);
+                    String horaFimUC = outputTimeFormat.format(dataFimCompleta);
+                    String diaSem = "N/A";
+                    String salaCompleta = ((VEvent) event).getLocation().getValue();
+                    String[] salaArray = nome.split(",");
+                    String sala = salaArray[0].trim();
+                    int maxSala = 0;
+                    int nInscritos = 0;
+                    String turno = "N/A";
+                    String[] nomeArray = nome.split("-");
+                    String uc = nomeArray[0].trim();
+                    String turma = "Turma: N/A";
+                    Bloco bloco = new Bloco(curso, turno, uc, turma, diaSem, sala, maxSala, nInscritos, horaInicioUC, horaFimUC, dataAula);
+                    horario.addToHor(bloco);
+                }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException | ParserException e) {
+            e.printStackTrace();
+        }
+        return horario;
+    }
 
     public static Horario parseJson(String filename) {
         Gson gson = new Gson();
