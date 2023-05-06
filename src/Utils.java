@@ -160,7 +160,9 @@ public class Utils {
      * Engine para o display
      */
 
-    private void sortByDate(Horario horario) {
+
+    //TODO: COMPOR SORT
+    public static Horario sortByDate(Horario horario) {
         ArrayList<Bloco> blocos = horario.horario;
         Collections.sort(blocos, new Comparator<Bloco>() {
             public int compare(Bloco b1, Bloco b2) {
@@ -172,9 +174,9 @@ public class Utils {
                 return dataComp;
             }
         });
-
+        return  horario;
     }
-    public ArrayList getOverCrowded(Horario horario){
+    private static ArrayList getOverCrowded(Horario horario){
         ArrayList<Integer> index = new ArrayList<Integer>();
         for (Bloco bloco : horario.horario) {
             if (bloco.getMaxSala()< bloco.nInscritos){
@@ -184,24 +186,47 @@ public class Utils {
         return index;
     }
 
-    public void setOverCrowded(Horario horario , JTable table) {
+//    public static void setOverCrowded(Horario horario , JTable table) {
+//        sortByDate(horario);
+//        ArrayList<Integer> indexList =getOverCrowded(horario);
+//
+//        DefaultTableModel model = (DefaultTableModel) table.getModel();
+//        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+//        renderer.setBackground(Color.BLUE);
+//
+//        for (int i = 0; i < indexList.size(); i++) {
+//            int rowIndex = indexList.get(i);
+//            for (int j = 0; j < table.getColumnCount(); j++) {
+//                table.getCellRenderer(rowIndex, j).getTableCellRendererComponent(table, table.getValueAt(rowIndex, j), false, false, rowIndex, j).setBackground(new Color(51,153,255));
+//            }
+//            model.fireTableRowsUpdated(rowIndex, rowIndex);
+//        }
+//    }
+    public static void setOverCrowded(Horario horario , JTable table) {
         sortByDate(horario);
-        ArrayList<Integer> indexList =getOverCrowded(horario);
+        ArrayList<Integer> indexList = getOverCrowded(horario);
 
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setBackground(Color.BLUE);
 
+        // Obter a posição da célula clicada
+        int clickedRow = table.getSelectedRow();
+        int clickedCol = table.getSelectedColumn();
+
         for (int i = 0; i < indexList.size(); i++) {
             int rowIndex = indexList.get(i);
             for (int j = 0; j < table.getColumnCount(); j++) {
-                table.getCellRenderer(rowIndex, j).getTableCellRendererComponent(table, table.getValueAt(rowIndex, j), false, false, rowIndex, j).setBackground(new Color(51,153,255));
+                // Verificar se a célula atual não é a célula clicada
+                if (rowIndex != clickedRow || j != clickedCol) {
+                    table.getCellRenderer(rowIndex, j).getTableCellRendererComponent(table, table.getValueAt(rowIndex, j), false, false, rowIndex, j).setBackground(new Color(51, 153, 255));
+                }
             }
             model.fireTableRowsUpdated(rowIndex, rowIndex);
         }
     }
 
-    public ArrayList getOverlap (Horario horario){
+    private static ArrayList getOverlap(Horario horario){
         ArrayList<Integer> index = new ArrayList<Integer>() ;
         ArrayList<Bloco> blocos = horario.horario;
 
@@ -221,7 +246,7 @@ public class Utils {
         return index;
     }
 
-    public void setOverlap(Horario horario , JTable table) {
+    public static void setOverlap(Horario horario , JTable table) {
         sortByDate(horario);
         ArrayList<Integer> indexList = getOverlap(horario);
 
@@ -238,102 +263,140 @@ public class Utils {
         }
     }
 
-    public Horario filter(Horario horario, String  filter, String date){
+    public static Horario filter(Horario horario, String  filter, String date){
         Horario filtred = new Horario();
         int[] day31 = {1,3,5,7,8,10,12};
-        switch (filter){
-            case "day":
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
-                Date dataAula;
-                try {
-                    dataAula = dateFormat.parse(date);
-                } catch ( ParseException e) {
-                    // Se a data não estiver no formato esperado, retorna null
-                    return null;
-                }
 
 
-
-                // Percorre os blocos do horário e adiciona aqueles que estão na data desejada ao novo horário
-                for (Bloco bloco : horario.horario) {
-                    if (bloco.getDataAula().equals(dataAula)) {
-                        filtred.addToHor(bloco);
+        if(checkHor(horario, date)){
+            switch (filter){
+                case "Dia":
+                    for (Bloco bloco : horario.horario) {
+                        if (bloco.getDataAula().equals(date)) {
+                            filtred.addToHor(bloco);
+                        }
                     }
-                }
 
-                break;
-            case "week":
-                String firstday = getFday(date, horario,day31);
-                String lastday = getLday(firstday,horario,day31);
-                for (Bloco bloco : horario.horario) {
-                    if (bloco.getDataAula().compareTo(firstday) >= 0 && bloco.getDataAula().compareTo(lastday) <= 0) {
-                        filtred.addToHor(bloco);
+                    break;
+                case "Semana":
+
+
+                    String firstday = getFday(date, horario,day31);
+
+
+                    String lastday = getLday(firstday,horario,day31);
+                    ArrayList<String> validDays = getValidDays(firstday,lastday,day31);
+                    for (String day : validDays) {
+                        System.out.println(day);
                     }
-                }
 
 
-                break;
-            case "month":
-                String[] parseData = date.split("/");
-                for (Bloco bloco : horario.horario) {
-                    String dateHor = bloco.getDataAula();
-                    String[] parsehor = dateHor.split("/");
-                    if(parsehor[1].equals(parseData[1])){
-                        filtred.addToHor(bloco);
+
+
+
+                    for (Bloco bloco : horario.horario) {
+                        String data = bloco.getDataAula();
+
+                        for (String day : validDays) {
+                            if(data.equals(day)){
+                                filtred.addToHor(bloco);
+                            }
+                        }
+
                     }
-                }
-
-                break;
+//
 
 
+                    break;
+                case "Mes":
+
+                    String[] parseData = date.split("/");
+                    int month = Integer.parseInt(parseData[1]) ;
+                    int year = Integer.parseInt(parseData[2]) ;
+
+                    for (Bloco bloco : horario.horario) {
+                        String dateH = bloco.getDataAula();
+                        String[] parseH = dateH.split("/");
+                        int monthH = Integer.parseInt(parseH[1]) ;
+                        int yearH = Integer.parseInt(parseH[2]) ;
+                        if(monthH == month && yearH==year){
+                            filtred.addToHor(bloco);
+                        }
+
+                    }
+
+                    break;
+
+
+            }
+            return  filtred;
         }
-        return  filtred;
 
-
+        return horario;
 
 
     }
 
-    String getFday(String date, Horario horario, int[] array){
+    static String getFday(String date, Horario horario, int[] array){
         String[] parsedate = date.split("/");
         int day = Integer.parseInt(parsedate[0]);
         int month = Integer.parseInt(parsedate[1]);
 
         String weekDay = "null" ;
         for (Bloco bloco : horario.horario) {
-            if (date == bloco.getDataAula());
-            weekDay = bloco.getDia_sem();
-            break;
+            String dataAula =  bloco.getDataAula();
+            if (date.equals(dataAula)){
+                weekDay = bloco.getDia_sem();
+                System.out.println("dia da semana"+weekDay);
+                break;
+            }
+
         }
+
+
         switch (weekDay) {
             case "segunda":
             case "segunda-feira":
-                day--;
+            case "Seg":
+            case "seg":
+
                 break;
             case "terça":
             case "terça-feira":
             case "terca":
             case "terca-feira":
-                day= day-2;
+            case  "Ter":
+            case "ter":
+                day--;
                 break;
             case "quarta":
             case "quarta-feira":
-                day= day-3;
+            case "Qua":
+            case "qua":
+                day= day-2;
                 break;
             case "quinta":
             case "quinta-feira":
-                day= day-4;
+            case "Qui":
+            case "qui":
+                day= day-3;
                 break;
             case "sexta":
             case "sexta-feira":
-                day= day-5;
+            case "Sex":
+            case "sex":
+                day= day-4;
                 break;
             case "sábado":
             case "sabado":
-                day= day-6;
+            case "Sab":
+            case "sab":
+                day= day-5;
                 break;
             case "domingo":
-                day= day-7;
+            case "Dom":
+            case "dom":
+                day= day-6;
                 break;
             default:
 
@@ -356,18 +419,19 @@ public class Utils {
             }
 
         }
-
-        return (day +"/" + month+ "/"+parsedate[2]);
+        String formatM = String.format("%02d", month);
+        String formatD =String.format("%02d", day);
+        return (formatD +"/" + formatM+ "/"+parsedate[2]);
 
 
 
 
     }
-    String getLday(String date, Horario horario, int[] array){
+    static String getLday(String date, Horario horario, int[] array){
         String[] parsedate = date.split("/");
         int day = Integer.parseInt(parsedate[0]);
         int month = Integer.parseInt(parsedate[1]);
-        day += 7;
+        day += 6;
         if(check31(month,array)){
             if (day>31){
                 month++;
@@ -379,12 +443,85 @@ public class Utils {
                 day = day-30;
             }
         }
-        return (day +"/" + month+ "/"+parsedate[2]);
+        String formatM = String.format("%02d", month);
+        String formatD =String.format("%02d", day);
+        return (formatD +"/" + formatM+ "/"+parsedate[2]);
 
     }
-    boolean check31(int month, int[] array){
+    static boolean check31(int month, int[] array){
         for (int i = 0; i < array.length; i++) {
             if (array[i] == month) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    public static void clearColors(JTable table) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setBackground(Color.WHITE);
+
+        for (int row = 0; row < table.getRowCount(); row++) {
+            for (int col = 0; col < table.getColumnCount(); col++) {
+                table.getCellRenderer(row, col).getTableCellRendererComponent(table, table.getValueAt(row, col), false, false, row, col).setBackground(Color.WHITE);
+            }
+            model.fireTableRowsUpdated(row, row);
+        }
+    }
+
+    static ArrayList<String> getValidDays(String firstday, String lastday, int[] day31){
+        ArrayList<String>days =new ArrayList<String>();
+        String[] parseF = firstday.split("/");
+        String[] parseL = lastday.split("/");
+        int dayS = Integer.parseInt(parseF[0]);
+        int monthS = Integer.parseInt(parseF[1]);
+        int yearS = Integer.parseInt(parseF[2]);
+
+            if(check31(monthS,day31)){
+                //criar dias sabendo que o mes inicial da semana tem 31 dias
+                int day = dayS;
+                int month = monthS;
+                int year = yearS;
+                for (int i = 0; i < 7; i++) {
+                    if(day==32){
+                        day=1;
+                        month++;
+                    }
+                    String formatD =String.format("%02d", day);
+                    String formatM = String.format("%02d", month);
+                    String date = formatD+"/"+formatM+"/"+year;
+                    days.add(date);
+                    day++;
+
+                }
+            }
+            else {
+                int day = dayS;
+                int month = monthS;
+                int year = yearS;
+                for (int i = 0; i < 7; i++) {
+                    if(day==31){
+                        day=1;
+                        month++;
+                    }
+                    String formatD =String.format("%02d", day);
+                    String formatM = String.format("%02d", month);
+                    String date = formatD+"/"+formatM+"/"+year;
+                    days.add(date);
+                    day++;
+
+                }
+            }
+
+        return days;
+    }
+    static boolean checkHor(Horario horario, String date){
+        for (Bloco bloco : horario.horario) {
+            String dataAula = bloco.getDataAula();
+            if (date.equals(dataAula)) {
                 return true;
             }
         }

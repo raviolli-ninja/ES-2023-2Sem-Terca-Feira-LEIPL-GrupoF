@@ -7,6 +7,7 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.Component;
 
 import java.awt.*;
+import java.awt.event.*;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,11 +29,15 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class CsvJsonSwing extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private JTable table;
+
+
     private final int WIDTH = 1200;
     private final int HEIGHT = 800;
 
@@ -49,6 +54,10 @@ public class CsvJsonSwing extends JFrame {
 
     String source ;
 
+
+
+
+
     public CsvJsonSwing()  {
 
         super("ISCTE Schedule Generator");
@@ -58,25 +67,28 @@ public class CsvJsonSwing extends JFrame {
         //SubPanel para os butões no BorderLayout.SOUTH, no panel do panelRequirement()
         subPanel = new JPanel();
 
+
+
+
         //Não confundir com a table com model, isto apenas abre espaço para o model
         showPreviewTable();
+
 
        //Butons
         loadFileButton();
         convertHTMLButton();
         openConvertedFileButton();
         loadFromURIButton();
-
-
-
-        //Sorting
-        String[] sortOptions = {"Sort by Day", "Sort by Week", "Sort by Month"};
-        sortComboBox = new JComboBox<>(sortOptions);
-        setSortComboBoxWindow();
+        setOverlapButton();
+        setOverCrowdedButton();
+        sortButton();
+        resetButton();
+        filterButton();
 
     }
     public void loadFile(String filename) throws IOException {
         source = filename;
+        Utils.clearColors(table);
         boolean isCsv = filename.endsWith(".csv");
         if (isCsv) {
             horario = Utils.csvToHorario(filename);
@@ -84,13 +96,15 @@ public class CsvJsonSwing extends JFrame {
         else {
             horario = Utils.parseJson(filename);
         }
-        DefaultTableModel model = getModel();
+        DefaultTableModel model = getModel(horario);
         displayModel(model);
+
 
 
     }
 
-    public DefaultTableModel getModel(){
+    //fazer get model de modo a que receba um horario e a que nao receba um horario para o inicial
+    public DefaultTableModel getModel(Horario horario){
         List<Object[]> data = new ArrayList<>();
         List<String> columnNames = new ArrayList<>();
 
@@ -122,15 +136,6 @@ public class CsvJsonSwing extends JFrame {
     public void displayModel(DefaultTableModel model){
         table.setModel(model);
     }
-
-
-
-
-
-
-
-
-
 
     public void loadFileFromUri(String uri) {
         source = uri;
@@ -166,57 +171,7 @@ public class CsvJsonSwing extends JFrame {
     }
 
 
-    public void sortTable(int sortOption) {
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        List<Object[]> rows = new ArrayList<>();
-        for (int i = 1; i < model.getRowCount(); i++) {
-            Object[] row = new Object[model.getColumnCount()];
-            for (int j = 0; j < model.getColumnCount(); j++) {
-                row[j] = model.getValueAt(i, j);
-            }
-            rows.add(row);
-        }
-        model.setRowCount(0);
 
-        int dataAulaColumnIndex = model.findColumn("dataAula");
-
-
-        Comparator<LocalDateTime> comparator = null;
-        switch (sortOption) {
-            case 0: // Day
-                comparator = Comparator.comparing(LocalDateTime::toLocalDate);
-                break;
-            case 1: // Week
-                comparator = Comparator.comparing((LocalDateTime dateTime) -> dateTime.toLocalDate().with(DayOfWeek.MONDAY));
-                break;
-            case 2: // Month
-                comparator = Comparator.comparing((LocalDateTime dateTime) -> YearMonth.from(dateTime));
-                break;
-        }
-
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        Comparator<LocalDate> finalComparator = comparator != null ? Comparator.comparing(LocalDate::from) : null;
-
-        List<Object[]> rowsCopy = new ArrayList<>(rows);
-        rowsCopy.sort((a, b) -> {
-            LocalDate aDate = LocalDate.parse((String) a[dataAulaColumnIndex], dateFormatter);
-            LocalDate bDate = LocalDate.parse((String) b[dataAulaColumnIndex], dateFormatter);
-            return finalComparator.compare(aDate, bDate);
-        });
-
-        model.setRowCount(0);
-        for (Object[] row : rowsCopy) {
-            model.addRow(row);
-        }
-
-    }
-
-
-    private int getWeekNumber(int year, int month, int day) {
-        LocalDateTime date = LocalDateTime.of(year, month, day, 0, 0);
-        return date.getDayOfYear() / 7 + 1;
-    }
 
 
 
@@ -300,6 +255,10 @@ public class CsvJsonSwing extends JFrame {
 
 
 
+
+
+
+
     /*public  DefaultTableModel tableTOModel(){
         TableModel model =table.getModel();
         DefaultTableModel defaultModel = new DefaultTableModel();
@@ -348,6 +307,7 @@ public class CsvJsonSwing extends JFrame {
 
 
     public void loadFileButton() {
+
         JButton loadButton = new JButton("Load File");
         loadButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
@@ -366,20 +326,20 @@ public class CsvJsonSwing extends JFrame {
         subPanel.add(loadButton);
     }
 
-    public void setSortComboBoxWindow(){
-        sortComboBox.addActionListener(e -> {
-            if (lastLoadedFile != null) {
-                try {
-                    sortTable(sortComboBox.getSelectedIndex());
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Error sorting table: " + ex.getMessage());
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "No file has been loaded to sort.");
-            }
-        });
-        panel.add(sortComboBox, BorderLayout.NORTH);
+    private void resetTable()throws IOException {
+        boolean isCsv = source.endsWith(".csv");
+        if (isCsv) {
+            horario = Utils.csvToHorario(source);
+        }
+        else {
+            horario = Utils.parseJson(source);
+        }
+        DefaultTableModel model = getModel(horario);
+        displayModel(model);
+
     }
+
+
 
     public void convertHTMLButton(){
 
@@ -430,6 +390,155 @@ public class CsvJsonSwing extends JFrame {
         panel.add(subPanel, BorderLayout.SOUTH);
 
     }
+    public void setOverlapButton(){
+        JButton loadFromUriButton = new JButton("Mostrar Sobreposição");
+        loadFromUriButton.addActionListener(e -> {
+            Utils.setOverlap(horario,table);
+            table.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    if (SwingUtilities.isLeftMouseButton(e)) {
+
+                    }
+
+                }
+            });
+        });
+
+        subPanel.add(loadFromUriButton);
+        panel.add(subPanel, BorderLayout.SOUTH);
+
+    }
+    public void setOverCrowdedButton(){
+        JButton loadFromUriButton = new JButton("Mostrar Sobrelotação");
+        loadFromUriButton.addActionListener(e -> {
+            Utils.setOverCrowded(horario,table);
+            table.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    if (SwingUtilities.isLeftMouseButton(e)) {
+
+                    }
+
+                }
+            });
+        });
+
+        subPanel.add(loadFromUriButton);
+        panel.add(subPanel, BorderLayout.SOUTH);
+
+    }
+    public void sortButton(){
+        JButton loadFromUriButton = new JButton("sort");
+        loadFromUriButton.addActionListener(e -> {
+            horario = Utils.sortByDate(horario);
+
+            displayModel(getModel(horario));
+        });
+
+        subPanel.add(loadFromUriButton);
+        panel.add(subPanel, BorderLayout.SOUTH);
+
+    }
+    public void resetButton(){
+        JButton loadFromUriButton = new JButton("reset");
+        loadFromUriButton.addActionListener(e -> {
+            try {
+                resetTable();
+                Utils.clearColors(table);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        subPanel.add(loadFromUriButton);
+        panel.add(subPanel, BorderLayout.SOUTH);
+
+    }
+    public void filterButton(){
+        JButton loadFromUriButton = new JButton("filter");
+        loadFromUriButton.addActionListener(e -> {
+
+            filter();
+        });
+
+        subPanel.add(loadFromUriButton);
+        panel.add(subPanel, BorderLayout.SOUTH);
+
+    }
+    void filter(){
+        JFrame frame = new JFrame("Filtro");
+        frame.setSize(300, 300);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JLabel label = new JLabel("DATA");
+        label.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+        label.setFont(new Font("Arial", Font.BOLD, 16));
+        label.setPreferredSize(new Dimension(300, 40));
+        panel.add(label);
+
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel labelDay = new JLabel("Dia:");
+        inputPanel.add(labelDay);
+        JTextField textFieldDay = new JTextField(2);
+        inputPanel.add(textFieldDay);
+
+        JLabel labelMonth = new JLabel("Mês:");
+        inputPanel.add(labelMonth);
+        JTextField textFieldMonth = new JTextField(2);
+        inputPanel.add(textFieldMonth);
+
+        JLabel labelYear = new JLabel("Ano:");
+        inputPanel.add(labelYear);
+        JTextField textFieldYear = new JTextField(4);
+        inputPanel.add(textFieldYear);
+
+        panel.add(inputPanel);
+
+        String[] options = {"Dia", "Semana", "Mes"};
+        JComboBox<String> comboBox = new JComboBox<>(options);
+        comboBox.setAlignmentX(JComboBox.CENTER_ALIGNMENT);
+        comboBox.setMaximumSize(new Dimension(200, 30));
+        panel.add(comboBox);
+
+        JButton filterButton = new JButton("Filtrar");
+        filterButton.setAlignmentX(JButton.CENTER_ALIGNMENT);
+        filterButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selectedItem = (String) comboBox.getSelectedItem();
+                int day = Integer.parseInt(textFieldDay.getText());
+                int month = Integer.parseInt(textFieldMonth.getText()) ;
+                int  year =Integer.parseInt(textFieldYear.getText()) ;
+
+                String formattedD = String.format("%02d", day);
+                String formattedM = String.format("%02d", month);
+                String formatedY = textFieldYear.getText() ;
+                if(String.valueOf(year).length() == 2){
+                    formatedY = "20"+year;
+                }
+
+                String date = formattedD +"/"+formattedM+"/"+formatedY;
+                System.out.println(date);
+
+                Horario filtred = Utils.filter(horario,selectedItem,date);
+                displayModel(getModel(filtred));
+
+
+                frame.dispose();
+
+            }
+        });
+        panel.add(filterButton);
+
+        frame.add(panel);
+        frame.setVisible(true);
+    }
+
+
+
 
 
     /********************************************************************
@@ -449,6 +558,7 @@ public class CsvJsonSwing extends JFrame {
         columnNames.add("dataAula");
         columnNames.add("turno");
     }
+
 
 
 
