@@ -1,4 +1,4 @@
-package src.test;
+package src.testes.src.test;
 
 import org.junit.jupiter.api.Test;
 import src.Bloco;
@@ -8,6 +8,7 @@ import src.Utils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static src.Utils.readFile;
@@ -146,5 +147,97 @@ class UtilsTest {
         File file = new File(filename);
         file.delete();
     }
+
+    @Test
+    public void testGetOverCrowded() {
+
+        Horario  horario = new Horario("Horário 1");
+
+        Bloco bloco1 = new Bloco("curso1", "manhã", "uc1", "turma1", "segunda", "sala1", 30, 35, "8h", "10h", "2023-06-12");
+        Bloco bloco2 = new Bloco("curso1", "manhã", "uc2", "turma2", "terça", "sala2", 20, 18, "10h", "12h", "2023-06-13");
+        Bloco bloco3 = new Bloco("uc3", "turma3", "quarta", "sala3", 15, 10, "14h", "16h", "2023-06-14", "manhã");
+        Bloco bloco4 = new Bloco("uc4", "turma4", "quinta", "sala4", 40, 50, "16h", "18h", "2023-06-15", "tarde");
+
+        horario.addToHor(bloco1);
+        horario.addToHor(bloco2);
+        horario.addToHor(bloco3);
+        horario.addToHor(bloco4);
+
+        ArrayList<Integer> result = Utils.getOverCrowded(horario);
+        ArrayList<Integer> expected = new ArrayList<Integer>();
+        expected.add(0);
+        expected.add(3);
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void testGetOverCrowded_NoOvercrowded() {
+        // Create a new Horario object
+        Horario horario = new Horario("Horario 1");
+
+        // Add some Bloco objects to the horario
+        Bloco bloco1 = new Bloco("curso1", "manhã", "uc1", "turma1", "segunda", "sala1", 30, 20, "8h", "10h", "2023-06-12");
+        Bloco bloco2 = new Bloco("curso1", "manhã", "uc2", "turma2", "terça", "sala2", 20, 18, "10h", "12h", "2023-06-13");
+        Bloco bloco3 = new Bloco("uc3", "turma3", "quarta", "sala3", 15, 10, "14h", "16h", "2023-06-14", "manhã");
+        horario.addToHor(bloco1);
+        horario.addToHor(bloco2);
+        horario.addToHor(bloco3);
+
+        // Call the getOverCrowded method
+        ArrayList<Integer> index = Utils.getOverCrowded(horario);
+
+        // Assert that the index array is empty
+        assertEquals(0, index.size());
+    }
+
+
+    @Test
+    public void testGetOverlap_NoOverlap() {
+        // Create blocks with no overlap
+        Bloco bloco1 = new Bloco("curso1", "manhã", "uc1", "turma1", "segunda", "sala1", 30, 20, "08:00:00", "09:30:00", "2023-06-12");
+        Bloco bloco2 = new Bloco("curso1", "manhã", "uc2", "turma2", "terça", "sala2", 20, 18, "08:00:00", "09:30:00", "2023-06-13");
+        Bloco bloco3 = new Bloco("curso1", "manhã", "uc3", "turma2", "quarta", "sala3", 20, 18, "08:00:00", "09:30:00", "2023-06-13");
+
+
+
+        // Add blocks to the schedule
+        Horario horario = new Horario();
+        horario.addToHor(bloco1);
+        horario.addToHor(bloco2);
+        horario.addToHor(bloco3);
+
+        // Ensure that no overlap is returned
+        ArrayList<Integer> expected = new ArrayList<>();
+        ArrayList<Integer> actual = Utils.getOverlap(horario);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetOverlap_Overlap() {
+        // Create blocks with overlap
+        Bloco bloco1 = new Bloco("curso1", "manhã", "uc1", "turma1", "segunda", "sala1", 30, 20, "08:00:00", "09:30:00", "2023-06-12");
+        Bloco bloco2 = new Bloco("curso1", "manhã", "uc2", "turma2", "segunda", "sala1", 20, 18, "08:00:00", "09:30:00", "2023-06-12");
+        Bloco bloco3 = new Bloco("curso1", "manhã", "uc3", "turma2", "terça", "sala2", 20, 18, "08:00:00", "09:30:00", "2023-06-13");
+        Bloco bloco4 = new Bloco("curso1", "manhã", "uc4", "turma2", "terça", "sala2", 20, 18, "08:00:00", "09:30:00", "2023-06-13");
+
+        // Add blocks to the schedule
+        Horario horario = new Horario();
+        horario.addToHor(bloco1);
+        horario.addToHor(bloco2);
+        horario.addToHor(bloco3);
+        horario.addToHor(bloco4);
+
+        // Ensure that the expected overlap is returned
+        ArrayList<Integer> expected = new ArrayList<>();
+        expected.add(0);
+        expected.add(1);
+        expected.add(2);
+        expected.add(3);
+        ArrayList<Integer> actual = Utils.getOverlap(horario);
+        assertEquals(expected, actual);
+    }
+
+
 }
 
