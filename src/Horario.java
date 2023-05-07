@@ -23,4 +23,12 @@ public class Horario {
     public void addToHor(Bloco bloco){
         horario.add(bloco);
     }
+
+    public boolean isEmpty() {
+        return horario.isEmpty();
+    }
+
+    public ArrayList<Bloco> getHorario () {
+        return this.horario;
+    }
 }

@@ -1,4 +1,4 @@
-package src.testes.src.test;
+package src.test;
 
 import org.junit.jupiter.api.Test;
 import src.Bloco;
@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.SplittableRandom;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static src.Utils.check31;
@@ -466,6 +465,32 @@ class UtilsTest {
         assertEquals(expectedDate3, day3);
         assertEquals(expectedDate4, day4);
     }
+
+    @Test
+    void testFromWebcalToHorario() {
+        // Testa se o método retorna um horário não nulo
+        Horario horario = Utils.fromWebcalToHorario("webcal://fenix.iscte-iul.pt/publico/publicPersonICalendar.do?method=iCalendar&username=pdrao@iscte.pt&password=jnyDmcLOe9Jw8LJ66AIQEnKbINOGJog2wdMWImltULxCPVdXeYLjTKlxzvNtxV8tcDN95j4cEF7N0JhquotwLtCgZPCuM5WLYYmtwHFzIjT5h2kfO38fZQOGH7MAnoSq");
+        assertNotNull(horario);
+
+        // Testa se o método retorna um horário vazio para uma URI inválida
+        Horario horarioInvalido = Utils.fromWebcalToHorario("https://exemplo.com/nao_existe.ics");
+        assertTrue(horarioInvalido.isEmpty());
+
+        //Testa se o método retorna um horário com pelo menos um bloco para uma URI válida
+        assertFalse(horario.isEmpty());
+
+        // Testa se o método retorna um horário com os atributos do bloco corretos para uma URI válida
+        System.out.println(horario.getHorario().get(0));
+        Bloco bloco = horario.getHorario().get(0);
+        assertEquals(0, bloco.getMaxSala());
+        assertEquals(0, bloco.getnInscritos());
+        assertEquals("18:00:00", bloco.getHoraInicioUC());
+        assertEquals("19:30:00", bloco.getHoraFimUC());
+        assertEquals("13/09/2022", bloco.getDataAula());
+
+
+    }
+
 }
 
 
