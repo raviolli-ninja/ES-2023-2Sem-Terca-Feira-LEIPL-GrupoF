@@ -118,7 +118,6 @@ public class Utils {
         return horario;
     }
 
-
     public static Horario parseJson(String filename) {
         Gson gson = new Gson();
         Horario horario = new Horario();

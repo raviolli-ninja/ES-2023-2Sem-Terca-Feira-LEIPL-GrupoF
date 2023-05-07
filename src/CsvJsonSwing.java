@@ -76,7 +76,6 @@ public class CsvJsonSwing extends JFrame {
         //Não confundir com a table com model, isto apenas abre espaço para o model
         showPreviewTable();
 
-
        //Butons
         loadFileButton();
         loadFromURIButton();

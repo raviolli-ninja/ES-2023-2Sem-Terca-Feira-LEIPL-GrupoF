@@ -1,11 +1,5 @@
 package src;
 
-
-
-
-
-
-
 public class Bloco {
 
     public  String uc,turma,dia_sem,sala, curso, turno,horaInicioUC,horaFimUC, dataAula;
