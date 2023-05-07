@@ -299,6 +299,36 @@ class UtilsTest {
 
 //TODO: test getvalidDays filter
 
+    @Test
+    void testFromWebcalToHorario() {
+        // Testa se o método retorna um horário não nulo
+        Horario horario = Utils.fromWebcalToHorario("https://exemplo.com/calendario.ics");
+        Assertions.assertNotNull(horario);
+
+        // Testa se o método retorna um horário vazio para uma URI inválida
+        Horario horarioInvalido = fromWebcalToHorario("https://exemplo.com/nao_existe.ics");
+        Assertions.assertTrue(horarioInvalido.isEmpty());
+
+        // Testa se o método retorna um horário com pelo menos um bloco para uma URI válida
+        Horario horarioComBlocos = fromWebcalToHorario("https://exemplo.com/calendario_com_blocos.ics");
+        Assertions.assertFalse(horarioComBlocos.isEmpty());
+        Assertions.assertFalse(horarioComBlocos.getBlocos().isEmpty());
+
+        // Testa se o método retorna um horário com os atributos do bloco corretos para uma URI válida
+        Bloco bloco = horarioComBlocos.getBlocos().get(0);
+        Assertions.assertEquals("Curso", bloco.getCurso());
+        Assertions.assertEquals("Turno", bloco.getTurno());
+        Assertions.assertEquals("UC", bloco.getUC());
+        Assertions.assertEquals("Turma", bloco.getTurma());
+        Assertions.assertEquals("DiaSem", bloco.getDiaSem());
+        Assertions.assertEquals("Sala", bloco.getSala());
+        Assertions.assertEquals(10, bloco.getMaxSala());
+        Assertions.assertEquals(5, bloco.getNInscritos());
+        Assertions.assertEquals("08:00:00", bloco.getHoraInicioUC());
+        Assertions.assertEquals("10:00:00", bloco.getHoraFimUC());
+        Assertions.assertEquals("01/01/2023", bloco.getDataAula());
+    }
+
 }
 
 

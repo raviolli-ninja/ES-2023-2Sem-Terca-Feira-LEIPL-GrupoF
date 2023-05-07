@@ -5,13 +5,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.io.BufferedReader;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -176,7 +173,7 @@ public class Utils {
         });
         return  horario;
     }
-    private static ArrayList getOverCrowded(Horario horario){
+    public static ArrayList getOverCrowded(Horario horario){
         ArrayList<Integer> index = new ArrayList<Integer>();
         for (Bloco bloco : horario.horario) {
             if (bloco.getMaxSala()< bloco.nInscritos){
@@ -226,7 +223,7 @@ public class Utils {
         }
     }
 
-    private static ArrayList getOverlap(Horario horario){
+    public static ArrayList getOverlap(Horario horario){
         ArrayList<Integer> index = new ArrayList<Integer>() ;
         ArrayList<Bloco> blocos = horario.horario;
 
@@ -337,7 +334,7 @@ public class Utils {
 
     }
 
-    static String getFday(String date, Horario horario, int[] array){
+    public static String getFday(String date, Horario horario, int[] array){
         String[] parsedate = date.split("/");
         int day = Integer.parseInt(parsedate[0]);
         int month = Integer.parseInt(parsedate[1]);
@@ -427,7 +424,7 @@ public class Utils {
 
 
     }
-    static String getLday(String date, Horario horario, int[] array){
+    public static String getLday(String date, Horario horario, int[] array){
         String[] parsedate = date.split("/");
         int day = Integer.parseInt(parsedate[0]);
         int month = Integer.parseInt(parsedate[1]);
@@ -448,7 +445,7 @@ public class Utils {
         return (formatD +"/" + formatM+ "/"+parsedate[2]);
 
     }
-    static boolean check31(int month, int[] array){
+    public static boolean check31(int month, int[] array){
         for (int i = 0; i < array.length; i++) {
             if (array[i] == month) {
                 return true;
@@ -535,6 +532,22 @@ public class Utils {
         horario.addToHor(bloco1);
         horario.addToHor(bloco2);
         horarioToCSV(horario,"teste1csv");
+    }
+
+    public static String readFile(String filePath) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        StringBuilder content = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            content.append(line).append("\n");
+        }
+        reader.close();
+        return content.toString();
+    }
+
+    public static void deleteFile(String filePath) {
+        File file = new File(filePath);
+        file.delete();
     }
 
 }
