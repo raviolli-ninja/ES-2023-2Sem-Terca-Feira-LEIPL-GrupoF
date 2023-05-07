@@ -12,7 +12,12 @@
 
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+
+        <sonar.organization>my-org</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.login>ES-2023-2Sem-Terca-Feira-LEIPL-GrupoF</sonar.login>
     </properties>
+
 
     <dependencies>
 
@@ -56,16 +61,20 @@
         </dependency>
 
 
+
     </dependencies>
     <build>
     <pluginManagement>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <version>2.7.1</version>
+                <version>3.8.0.2131</version>
             </plugin>
         </plugins>
     </pluginManagement>
     </build>
+
+
+
 </project>
