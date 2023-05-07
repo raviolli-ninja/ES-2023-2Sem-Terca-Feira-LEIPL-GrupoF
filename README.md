@@ -10,12 +10,4 @@ Paulo Araújo 93290 raviolli-ninja
 
 
 
-
-
-Descrição e identificação de erros:
-
-
-
-
-
 Funcionalidades incompletas/não implementadas: Criar horario apartir de UC isolada
