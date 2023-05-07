@@ -344,7 +344,6 @@ public class CsvJsonSwing extends JFrame {
         panel.add(subPanelN, BorderLayout.NORTH);
     }
 
-
     public void loadFromURIButton(){
         JButton loadFromUriButton = new JButton("Load from URI");
         loadFromUriButton.addActionListener(e -> {
@@ -361,6 +360,7 @@ public class CsvJsonSwing extends JFrame {
         panel.add(subPanelN, BorderLayout.NORTH);
 
     }
+
     public void setOverlapButton(){
         JButton loadFromUriButton = new JButton("Mostrar Sobreposição");
         loadFromUriButton.addActionListener(e -> {
