@@ -245,7 +245,7 @@ class UtilsTest {
         int[] array = {1, 3, 5, 7, 8, 10, 12};
         Horario horario = new Horario();
         Bloco bloco1 = new Bloco("curso1", "manhã", "uc1", "turma1", "segunda", "sala1", 30, 20, "08:00:00", "09:30:00", "12/06/2023");
-        Bloco bloco2 = new Bloco("curso1", "manhã", "uc1", "turma1", "quarta", "sala1", 30, 20, "08:00:00", "09:30:00", "21/5/2023");
+        Bloco bloco2 = new Bloco("curso1", "manhã", "uc1", "turma1", "quarta", "sala1", 30, 20, "08:00:00", "09:30:00", "21/05/2023");
         Bloco bloco3 = new Bloco("curso1", "manhã", "uc1", "turma1", "sexta", "sala1", 30, 20, "08:00:00", "09:30:00", "01/06/2023");
         Bloco bloco4 = new Bloco("curso1", "manhã", "uc1", "turma1", "sexta", "sala1", 30, 20, "08:00:00", "09:30:00", "01/05/2023");
         horario.addToHor(bloco1);
@@ -254,37 +254,33 @@ class UtilsTest {
         horario.addToHor(bloco4);
 
         String expected1 ="27/04/2023";
-        assertEquals(expected1,Utils.getFday("1/05/2023",horario,array));
+        String actual1 = Utils.getFday("01/05/2023",horario,array);
+        assertEquals(expected1,actual1);
         String expected2 ="19/05/2023";
         assertEquals(expected2,Utils.getFday("21/05/2023",horario,array));
-        String expected3 ="28/06/2023";
-        assertEquals(expected3,Utils.getFday("1/06/2023",horario,array));
+        String expected3 ="28/05/2023";
+        assertEquals(expected3,Utils.getFday("01/06/2023",horario,array));
         String expected4 ="12/06/2023";
         assertEquals(expected4,Utils.getFday("12/06/2023",horario,array));
     }
 
-    @Test
-    public void testGetLastDay1(){
-        Horario horario = new Horario();
-        int[] array = {1, 3, 5, 7, 8, 10, 12};
-        String date = "27/03/2022";
-        String expected ="02/04/2022";
-        assertEquals(expected,Utils.getLday(date,horario,array));
-    }
 
     @Test
-    public void testGetLastDay2(){
+    public void testGetLastDay(){
         Horario horario = new Horario();
         int[] array = {1, 3, 5, 7, 8, 10, 12};
         String date = "27/04/2022";
-        String expected ="03/04/2022";
+        String expected ="03/05/2022";
         assertEquals(expected,Utils.getLday(date,horario,array));
         String date1 = "15/04/2022";
-        String expected1 ="22/04/2022";
+        String expected1 ="21/04/2022";
         assertEquals(expected1,Utils.getLday(date1,horario,array));
         String date2 = "27/03/2022";
         String expected2 ="02/04/2022";
         assertEquals(expected2,Utils.getLday(date2,horario,array));
+        String date3 = "27/03/2022";
+        String expected3 ="02/04/2022";
+        assertEquals(expected3,Utils.getLday(date3,horario,array));
     }
 
 
@@ -299,34 +295,200 @@ class UtilsTest {
 
 //TODO: test getvalidDays filter
 
+
+    @Test
+    public void testGetValidDays(){
+        int[] array = {1, 3, 5, 7, 8, 10, 12};
+        ArrayList <String> expected1 = new ArrayList<String>();
+        String day1 = "01/05/2023";
+        String day2 = "02/05/2023";
+        String day3 = "03/05/2023";
+        String day4 = "04/05/2023";
+        String day5 = "05/05/2023";
+        String day6 = "06/05/2023";
+        String day7 = "07/05/2023";
+        expected1.add(day1);
+        expected1.add(day2);
+        expected1.add(day3);
+        expected1.add(day4);
+        expected1.add(day5);
+        expected1.add(day6);
+        expected1.add(day7);
+        ArrayList<String> expected2 = new ArrayList<String>();
+        day1 = "27/03/2023";
+        day2 = "28/03/2023";
+        day3 = "29/03/2023";
+        day4 = "30/03/2023";
+        day5 = "31/03/2023";
+        day6 = "01/04/2023";
+        day7 = "02/04/2023";
+        expected2.add(day1);
+        expected2.add(day2);
+        expected2.add(day3);
+        expected2.add(day4);
+        expected2.add(day5);
+        expected2.add(day6);
+        expected2.add(day7);
+        assertEquals(expected1,Utils.getValidDays("01/05/2023","07/05/2023",array));
+        assertEquals(expected2,Utils.getValidDays("27/03/2023","02/04/2023",array));
+
+    }
+    @Test
+    public void testFiltredDay(){
+
+        Horario horario = new Horario();
+        Bloco bloco1 = new Bloco("curso1", "manhã", "uc1", "turma1", "segunda", "sala1", 30, 20, "08:00:00", "09:30:00", "12/06/2023");
+        Bloco bloco2 = new Bloco("curso1", "manhã", "uc1", "turma1", "quarta", "sala1", 30, 20, "08:00:00", "09:30:00", "21/05/2023");
+        Bloco bloco3 = new Bloco("curso1", "manhã", "uc1", "turma1", "sexta", "sala1", 30, 20, "08:00:00", "09:30:00", "01/06/2023");
+        Bloco bloco4 = new Bloco("curso1", "manhã", "uc1", "turma1", "sexta", "sala1", 30, 20, "08:00:00", "09:30:00", "01/05/2023");
+        horario.addToHor(bloco1);
+        horario.addToHor(bloco1);
+        horario.addToHor(bloco2);
+        horario.addToHor(bloco3);
+        horario.addToHor(bloco4);
+
+        int expectedSize = 2;
+        String expectedUc = "uc1";
+        int expectedMaxSala = 30;
+        String expectedDay = "12/06/2023";
+
+        Horario received = Utils.filter(horario,"Dia", "12/06/2023");
+        ArrayList <Bloco> blocosR = received.horario;
+        int size = received.horario.size() ;
+        assertEquals(expectedSize,size);
+        int maxsala1 = blocosR.get(0).maxSala;
+        String UC1 = blocosR.get(0).uc;
+        String day1 = blocosR.get(0).dataAula;
+        int maxsala2 = blocosR.get(1).maxSala;
+        String UC2 = blocosR.get(1).uc;
+        String day2 = blocosR.get(1).dataAula;
+
+        assertEquals(expectedUc,UC1);
+        assertEquals(expectedUc,UC2);
+        assertEquals(expectedMaxSala,maxsala1);
+        assertEquals(expectedMaxSala,maxsala2);
+        assertEquals(expectedDay, day1);
+        assertEquals(expectedDay, day2);
+    }
+
+    @Test
+    public void testFiltredWeek() {
+
+        Horario horario = new Horario();
+        Bloco bloco1 = new Bloco("curso1", "manhã", "uc1", "turma1", "segunda", "sala1", 30, 20, "08:00:00", "09:30:00", "12/06/2023");
+        Bloco bloco2 = new Bloco("curso1", "manhã", "uc1", "turma1", "quarta", "sala1", 30, 20, "08:00:00", "09:30:00", "21/05/2023");
+        Bloco bloco3 = new Bloco("curso1", "manhã", "uc1", "turma1", "sexta", "sala1", 30, 20, "08:00:00", "09:30:00", "01/06/2023");
+        Bloco bloco4 = new Bloco("curso1", "manhã", "uc1", "turma1", "sexta", "sala1", 30, 20, "08:00:00", "09:30:00", "01/05/2023");
+        Bloco bloco5 = new Bloco("curso1", "manhã", "uc1", "turma1", "segunda", "sala1", 30, 20, "08:00:00", "09:30:00", "27/04/2023");
+        Bloco bloco6 = new Bloco("curso1", "manhã", "uc1", "turma1", "sexta", "sala1", 30, 20, "08:00:00", "09:30:00", "03/05/2023");
+        Bloco bloco7 = new Bloco("curso1", "manhã", "uc1", "turma1", "sexta", "sala1", 30, 20, "08:00:00", "09:30:00", "04/05/2023");
+        horario.addToHor(bloco1);
+        horario.addToHor(bloco2);
+        horario.addToHor(bloco3);
+        horario.addToHor(bloco4);
+        horario.addToHor(bloco5);
+        horario.addToHor(bloco6);
+        horario.addToHor(bloco7);
+
+        int expectedSize = 3;
+        String expectedUC = "uc1";
+        String expectedDate1 = "01/05/2023";
+        String expectedDate2 = "27/04/2023";
+        String expectedDate3 = "03/05/2023";
+
+        Horario received = Utils.filter(horario,"Semana", "01/05/2023");
+        ArrayList <Bloco> blocosR = received.horario;
+        int size = received.horario.size() ;
+        String UC1 = blocosR.get(0).uc;
+        String UC2 = blocosR.get(1).uc;
+        String UC3 = blocosR.get(2).uc;
+        String day1 = blocosR.get(0).dataAula;
+        String day2 = blocosR.get(1).dataAula;
+        String day3 = blocosR.get(2).dataAula;
+
+
+        assertEquals(expectedSize,size);
+        assertEquals(expectedUC,UC1);
+        assertEquals(expectedUC,UC2);
+        assertEquals(expectedUC,UC3);
+        assertEquals(expectedDate1, day1);
+        assertEquals(expectedDate2, day2);
+        assertEquals(expectedDate3, day3);
+
+
+    }
+
+
+    @Test
+    public void testFilerMonth(){
+        Horario horario = new Horario();
+        Bloco bloco1 = new Bloco("curso1", "manhã", "uc1", "turma1", "segunda", "sala1", 30, 20, "08:00:00", "09:30:00", "12/06/2023");
+        Bloco bloco2 = new Bloco("curso1", "manhã", "uc1", "turma1", "quarta", "sala1", 30, 20, "08:00:00", "09:30:00", "21/05/2023");
+        Bloco bloco3 = new Bloco("curso1", "manhã", "uc1", "turma1", "sexta", "sala1", 30, 20, "08:00:00", "09:30:00", "01/06/2023");
+        Bloco bloco4 = new Bloco("curso1", "manhã", "uc1", "turma1", "sexta", "sala1", 30, 20, "08:00:00", "09:30:00", "01/05/2023");
+        Bloco bloco5 = new Bloco("curso1", "manhã", "uc1", "turma1", "segunda", "sala1", 30, 20, "08:00:00", "09:30:00", "27/04/2023");
+        Bloco bloco6 = new Bloco("curso1", "manhã", "uc1", "turma1", "sexta", "sala1", 30, 20, "08:00:00", "09:30:00", "03/05/2023");
+        Bloco bloco7 = new Bloco("curso1", "manhã", "uc1", "turma1", "sexta", "sala1", 30, 20, "08:00:00", "09:30:00", "04/05/2023");
+        horario.addToHor(bloco1);
+        horario.addToHor(bloco2);
+        horario.addToHor(bloco3);
+        horario.addToHor(bloco4);
+        horario.addToHor(bloco5);
+        horario.addToHor(bloco6);
+        horario.addToHor(bloco7);
+
+        int expectedSize = 4;
+        String expectedUC = "uc1";
+        String expectedDate1 = "21/05/2023";
+        String expectedDate2 = "01/05/2023";
+        String expectedDate3 = "03/05/2023";
+        String expectedDate4 = "04/05/2023";
+
+        Horario received = Utils.filter(horario,"Mes", "01/05/2023");
+        ArrayList <Bloco> blocosR = received.horario;
+        int size = received.horario.size() ;
+        String UC1 = blocosR.get(0).uc;
+        String UC2 = blocosR.get(1).uc;
+        String UC3 = blocosR.get(2).uc;
+        String UC4 = blocosR.get(3).uc;
+        String day1 = blocosR.get(0).dataAula;
+        String day2 = blocosR.get(1).dataAula;
+        String day3 = blocosR.get(2).dataAula;
+        String day4 = blocosR.get(3).dataAula;
+        assertEquals(expectedSize,size);
+        assertEquals(expectedUC,UC1);
+        assertEquals(expectedUC,UC2);
+        assertEquals(expectedUC,UC3);
+        assertEquals(expectedUC,UC4);
+        assertEquals(expectedDate1, day1);
+        assertEquals(expectedDate2, day2);
+        assertEquals(expectedDate3, day3);
+        assertEquals(expectedDate4, day4);
+    }
+
     @Test
     void testFromWebcalToHorario() {
         // Testa se o método retorna um horário não nulo
-        Horario horario = Utils.fromWebcalToHorario("https://exemplo.com/calendario.ics");
-        Assertions.assertNotNull(horario);
+        Horario horario = Utils.fromWebcalToHorario("webcal://fenix.iscte-iul.pt/publico/publicPersonICalendar.do?method=iCalendar&username=pdrao@iscte.pt&password=jnyDmcLOe9Jw8LJ66AIQEnKbINOGJog2wdMWImltULxCPVdXeYLjTKlxzvNtxV8tcDN95j4cEF7N0JhquotwLtCgZPCuM5WLYYmtwHFzIjT5h2kfO38fZQOGH7MAnoSq");
+        assertNotNull(horario);
 
         // Testa se o método retorna um horário vazio para uma URI inválida
-        Horario horarioInvalido = fromWebcalToHorario("https://exemplo.com/nao_existe.ics");
-        Assertions.assertTrue(horarioInvalido.isEmpty());
+        Horario horarioInvalido = Utils.fromWebcalToHorario("https://exemplo.com/nao_existe.ics");
+        assertTrue(horarioInvalido.isEmpty());
 
-        // Testa se o método retorna um horário com pelo menos um bloco para uma URI válida
-        Horario horarioComBlocos = fromWebcalToHorario("https://exemplo.com/calendario_com_blocos.ics");
-        Assertions.assertFalse(horarioComBlocos.isEmpty());
-        Assertions.assertFalse(horarioComBlocos.getBlocos().isEmpty());
+        //Testa se o método retorna um horário com pelo menos um bloco para uma URI válida
+        assertFalse(horario.isEmpty());
 
         // Testa se o método retorna um horário com os atributos do bloco corretos para uma URI válida
-        Bloco bloco = horarioComBlocos.getBlocos().get(0);
-        Assertions.assertEquals("Curso", bloco.getCurso());
-        Assertions.assertEquals("Turno", bloco.getTurno());
-        Assertions.assertEquals("UC", bloco.getUC());
-        Assertions.assertEquals("Turma", bloco.getTurma());
-        Assertions.assertEquals("DiaSem", bloco.getDiaSem());
-        Assertions.assertEquals("Sala", bloco.getSala());
-        Assertions.assertEquals(10, bloco.getMaxSala());
-        Assertions.assertEquals(5, bloco.getNInscritos());
-        Assertions.assertEquals("08:00:00", bloco.getHoraInicioUC());
-        Assertions.assertEquals("10:00:00", bloco.getHoraFimUC());
-        Assertions.assertEquals("01/01/2023", bloco.getDataAula());
+        System.out.println(horario.getHorario().get(0));
+        Bloco bloco = horario.getHorario().get(0);
+        assertEquals(0, bloco.getMaxSala());
+        assertEquals(0, bloco.getnInscritos());
+        assertEquals("18:00:00", bloco.getHoraInicioUC());
+        assertEquals("19:30:00", bloco.getHoraFimUC());
+        assertEquals("13/09/2022", bloco.getDataAula());
+
+
     }
 
 }

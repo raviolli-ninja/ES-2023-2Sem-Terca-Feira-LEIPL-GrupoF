@@ -512,7 +512,7 @@ public class Utils {
         }
     }
 
-    static ArrayList<String> getValidDays(String firstday, String lastday, int[] day31){
+    public static ArrayList<String> getValidDays(String firstday, String lastday, int[] day31){
         ArrayList<String>days =new ArrayList<String>();
         String[] parseF = firstday.split("/");
         String[] parseL = lastday.split("/");
