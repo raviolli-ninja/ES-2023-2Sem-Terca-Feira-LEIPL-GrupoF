@@ -1,6 +1,3 @@
-package src.test;
-
-
 /**
  * Objecto Bloco
  * objecto responsavel por armazenar as informaçoes de cada bloco de aulas

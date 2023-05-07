@@ -1,4 +1,3 @@
-package src.test;
 import com.google.gson.*;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;

@@ -1,6 +1,9 @@
 package src.test;
 
 import org.junit.jupiter.api.Test;
+import Bloco;
+import Horario;
+import Utils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -8,8 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static src.test.Utils.check31;
-import static src.test.Utils.readFile;
+import static Utils.check31;
+import static Utils.readFile;
 
 class UtilsTest {
 
