@@ -123,44 +123,6 @@ public class Utils {
     }
 
 
-    public static Horario fromWebcalToHorario (String uri) {
-        Horario horario = new Horario();
-        SimpleDateFormat outputTimeFormat = new SimpleDateFormat("HH:mm:ss");
-        SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        String httpsString = uri.replaceFirst("webcal://", "https://");
-        try {
-                CalendarBuilder builder = new CalendarBuilder();
-                net.fortuna.ical4j.model.Calendar calendar = builder.build(new URL(httpsString).openStream());
-                List<String[]> data = new ArrayList<>();
-                for (Object event : calendar.getComponents(Component.VEVENT)) {
-                    String nome = ((VEvent) event).getSummary().getValue();
-                    String curso = "N/A";
-                    Date dataInicioCompleta = ((VEvent) event).getStartDate().getDate();
-                    Date dataFimCompleta = ((VEvent) event).getEndDate().getDate();
-                    String dataAula = outputDateFormat.format(dataInicioCompleta);
-                    String horaInicioUC = outputTimeFormat.format(dataInicioCompleta);
-                    String horaFimUC = outputTimeFormat.format(dataFimCompleta);
-                    String diaSem = "N/A";
-                    String salaCompleta = ((VEvent) event).getLocation().getValue();
-                    String[] salaArray = nome.split(",");
-                    String sala = salaArray[0].trim();
-                    int maxSala = 0;
-                    int nInscritos = 0;
-                    String turno = "N/A";
-                    String[] nomeArray = nome.split("-");
-                    String uc = nomeArray[0].trim();
-                    String turma = "Turma: N/A";
-                    Bloco bloco = new Bloco(curso, turno, uc, turma, diaSem, sala, maxSala, nInscritos, horaInicioUC, horaFimUC, dataAula);
-                    horario.addToHor(bloco);
-                }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException | ParserException e) {
-            e.printStackTrace();
-        }
-        return horario;
-    }
-
     public static Horario parseJson(String filename) {
         Gson gson = new Gson();
         Horario horario = new Horario();
@@ -200,6 +162,43 @@ public class Utils {
         }
     }
 
+    public static Horario fromWebcalToHorario (String uri) {
+        Horario horario = new Horario();
+        SimpleDateFormat outputTimeFormat = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String httpsString = uri.replaceFirst("webcal://", "https://");
+        try {
+            CalendarBuilder builder = new CalendarBuilder();
+            net.fortuna.ical4j.model.Calendar calendar = builder.build(new URL(httpsString).openStream());
+            List<String[]> data = new ArrayList<>();
+            for (Object event : calendar.getComponents(Component.VEVENT)) {
+                String nome = ((VEvent) event).getSummary().getValue();
+                String curso = "N/A";
+                Date dataInicioCompleta = ((VEvent) event).getStartDate().getDate();
+                Date dataFimCompleta = ((VEvent) event).getEndDate().getDate();
+                String dataAula = outputDateFormat.format(dataInicioCompleta);
+                String horaInicioUC = outputTimeFormat.format(dataInicioCompleta);
+                String horaFimUC = outputTimeFormat.format(dataFimCompleta);
+                String diaSem = "N/A";
+                String salaCompleta = ((VEvent) event).getLocation().getValue();
+                String[] salaArray = nome.split(",");
+                String sala = salaArray[0].trim();
+                int maxSala = 0;
+                int nInscritos = 0;
+                String turno = "N/A";
+                String[] nomeArray = nome.split("-");
+                String uc = nomeArray[0].trim();
+                String turma = "Turma: N/A";
+                Bloco bloco = new Bloco(curso, turno, uc, turma, diaSem, sala, maxSala, nInscritos, horaInicioUC, horaFimUC, dataAula);
+                horario.addToHor(bloco);
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException | ParserException e) {
+            e.printStackTrace();
+        }
+        return horario;
+    }
 
     /***********************************************************************************
      *
