@@ -1,3 +1,5 @@
+package src.test;
+
 import com.google.gson.*;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
@@ -105,7 +107,7 @@ public class Utils {
     /**
      * este metodo converte um arquivo csv para um objecto do tipo horario
      * @param arquivoCSV
-     * @return Horario
+     * @return src.test.Horario
      * @throws IOException
      */
     public static Horario csvToHorario(String arquivoCSV) throws IOException {
@@ -143,7 +145,7 @@ public class Utils {
     /**
      * este metodo converte um arquivo json para um objecto do tipo horario
      * @param filename
-     * @return Horario
+     * @return src.test.Horario
      */
     public static Horario parseJson(String filename) {
         Gson gson = new Gson();

@@ -1,9 +1,6 @@
 package src.test;
 
 import org.junit.jupiter.api.Test;
-import Bloco;
-import Horario;
-import Utils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -18,8 +15,8 @@ class UtilsTest {
 
     @Test
     public void testHorarioTOJSON() throws IOException {
-        // Cria um objeto de Horario com alguns blocos
-        Horario horario = new Horario("Horario de teste");
+        // Cria um objeto de src.test.Horario com alguns blocos
+        Horario horario = new Horario("src.test.Horario de teste");
         horario.addToHor(new Bloco("Curso", "Turno", "UC1", "Turma", "Segunda", "Sala1", 50, 30, "08:00", "10:00", "01/01/2023"));
         horario.addToHor(new Bloco("Curso", "Turno", "UC2", "Turma", "Terça", "Sala2", 30, 15, "10:00", "12:00", "02/01/2023"));
 
@@ -40,9 +37,9 @@ class UtilsTest {
 
     @Test
     void horarioToCSV() throws IOException {
-        // Cria um novo Horario
+        // Cria um novo src.test.Horario
 
-        Horario horario = new Horario("Horario de teste");
+        Horario horario = new Horario("src.test.Horario de teste");
         horario.addToHor(new Bloco("Curso", "Turno", "UC1", "Turma", "Segunda", "Sala1", 50, 30, "08:00", "10:00", "01/01/2023"));
         horario.addToHor(new Bloco("Curso", "Turno", "UC2", "Turma", "Terça", "Sala2", 30, 15, "10:00", "12:00", "02/01/2023"));
 
@@ -117,7 +114,7 @@ class UtilsTest {
         // Executar o método parseJson com o arquivo de teste
         Horario horario = Utils.parseJson(filename);
 
-        // Verificar se o objeto Horario contém a lista de blocos esperada
+        // Verificar se o objeto src.test.Horario contém a lista de blocos esperada
         assertEquals(2, horario.horario.size());
         Bloco bloco1 = horario.horario.get(0);
         assertEquals("mat", bloco1.getUc());
@@ -174,10 +171,10 @@ class UtilsTest {
 
     @Test
     void testGetOverCrowded_NoOvercrowded() {
-        // Create a new Horario object
-        Horario horario = new Horario("Horario 1");
+        // Create a new src.test.Horario object
+        Horario horario = new Horario("src.test.Horario 1");
 
-        // Add some Bloco objects to the horario
+        // Add some src.test.Bloco objects to the horario
         Bloco bloco1 = new Bloco("curso1", "manhã", "uc1", "turma1", "segunda", "sala1", 30, 20, "8h", "10h", "2023-06-12");
         Bloco bloco2 = new Bloco("curso1", "manhã", "uc2", "turma2", "terça", "sala2", 20, 18, "10h", "12h", "2023-06-13");
         Bloco bloco3 = new Bloco("uc3", "turma3", "quarta", "sala3", 15, 10, "14h", "16h", "2023-06-14", "manhã");

@@ -1,8 +1,10 @@
+package src.test;
+
 import java.util.ArrayList;
 
 /**
  * OBjecto horario
- * objecto responsavel por guarda uma lista de objesctos Bloco
+ * objecto responsavel por guarda uma lista de objesctos src.test.Bloco
  */
 public class Horario {
 
