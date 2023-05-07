@@ -1,17 +1,24 @@
 package src;
 import com.google.gson.*;
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.Component;
+import net.fortuna.ical4j.model.Date;
+import net.fortuna.ical4j.model.component.VEvent;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
+import java.util.List;
 
 
 public class Utils {
@@ -150,7 +157,6 @@ public class Utils {
             return null;
         }
     }
-
     public static Horario fromWebcalToHorario (String uri) {
         Horario horario = new Horario();
         SimpleDateFormat outputTimeFormat = new SimpleDateFormat("HH:mm:ss");
@@ -163,7 +169,7 @@ public class Utils {
             for (Object event : calendar.getComponents(Component.VEVENT)) {
                 String nome = ((VEvent) event).getSummary().getValue();
                 String curso = "N/A";
-                Date dataInicioCompleta = ((VEvent) event).getStartDate().getDate();
+                net.fortuna.ical4j.model.Date dataInicioCompleta = ((VEvent) event).getStartDate().getDate();
                 Date dataFimCompleta = ((VEvent) event).getEndDate().getDate();
                 String dataAula = outputDateFormat.format(dataInicioCompleta);
                 String horaInicioUC = outputTimeFormat.format(dataInicioCompleta);
