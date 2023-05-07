@@ -18,4 +18,4 @@ Descrição e identificação de erros:
 
 
 
-Funcionalidades incompletas/não implementadas:
+Funcionalidades incompletas/não implementadas: Criar horario apartir de UC isolada
