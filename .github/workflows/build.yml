@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - devlop
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
