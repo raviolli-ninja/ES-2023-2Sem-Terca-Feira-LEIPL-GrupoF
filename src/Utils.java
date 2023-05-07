@@ -1,5 +1,4 @@
-package src.test;
-
+package src;
 import com.google.gson.*;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
@@ -8,10 +7,14 @@ import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.component.VEvent;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.xml.crypto.dsig.CanonicalizationMethod;
+import java.awt.*;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
@@ -107,7 +110,7 @@ public class Utils {
     /**
      * este metodo converte um arquivo csv para um objecto do tipo horario
      * @param arquivoCSV
-     * @return src.test.Horario
+     * @return Horario
      * @throws IOException
      */
     public static Horario csvToHorario(String arquivoCSV) throws IOException {
@@ -145,7 +148,7 @@ public class Utils {
     /**
      * este metodo converte um arquivo json para um objecto do tipo horario
      * @param filename
-     * @return src.test.Horario
+     * @return Horario
      */
     public static Horario parseJson(String filename) {
         Gson gson = new Gson();
