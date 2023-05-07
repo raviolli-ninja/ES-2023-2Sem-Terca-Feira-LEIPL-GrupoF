@@ -1,9 +1,8 @@
-package src;
+package src.test;
 
 
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * OBjecto horario
