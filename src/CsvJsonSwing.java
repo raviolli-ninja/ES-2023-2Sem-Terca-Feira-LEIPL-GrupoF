@@ -48,6 +48,8 @@ public class CsvJsonSwing extends JFrame {
     //Se houver mais de 1 panel, é necessário criar um subPanel array?
     private JPanel subPanel;
 
+    private JPanel subPanelN;
+
     private JComboBox<String> sortComboBox;
 
     Horario horario;
@@ -66,6 +68,7 @@ public class CsvJsonSwing extends JFrame {
 
         //SubPanel para os butões no BorderLayout.SOUTH, no panel do panelRequirement()
         subPanel = new JPanel();
+        subPanelN = new JPanel();
 
 
 
@@ -81,9 +84,9 @@ public class CsvJsonSwing extends JFrame {
         loadFromURIButton();
         setOverlapButton();
         setOverCrowdedButton();
-        sortButton();
         resetButton();
         filterButton();
+        convertTOJson();
 
     }
     public void loadFile(String filename) throws IOException {
@@ -179,7 +182,7 @@ public class CsvJsonSwing extends JFrame {
 
 
 
-    private void convertToHTML(String filename, int sortOption) throws IOException {
+    private void convertToHTML(String filename) throws IOException {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         List<Object[]> rows = new ArrayList<>();
         for (int i = 0; i < model.getRowCount(); i++) {
@@ -190,41 +193,6 @@ public class CsvJsonSwing extends JFrame {
             rows.add(row);
         }
 
-        int dataAulaColumnIndex = model.findColumn("dataAula");
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-
-        Comparator<Object[]> comparator = null;
-        switch (sortOption) {
-            case 0: // Sort by Day
-                comparator = (a, b) -> {
-                    LocalDate aDate = LocalDate.parse((String) a[dataAulaColumnIndex], dateFormatter);
-                    LocalDate bDate = LocalDate.parse((String) b[dataAulaColumnIndex], dateFormatter);
-                    return aDate.compareTo(bDate);
-                };
-                break;
-            case 1: // Sort by Week
-                comparator = (a, b) -> {
-                    LocalDate aDate = LocalDate.parse((String) a[dataAulaColumnIndex], dateFormatter);
-                    LocalDate bDate = LocalDate.parse((String) b[dataAulaColumnIndex], dateFormatter);
-                    LocalDate aWeek = aDate.with(DayOfWeek.MONDAY);
-                    LocalDate bWeek = bDate.with(DayOfWeek.MONDAY);
-                    return aWeek.compareTo(bWeek);
-                };
-                break;
-            case 2: // Sort by Month
-                comparator = (a, b) -> {
-                    LocalDate aDate = LocalDate.parse((String) a[dataAulaColumnIndex], dateFormatter);
-                    LocalDate bDate = LocalDate.parse((String) b[dataAulaColumnIndex], dateFormatter);
-                    YearMonth aMonth = YearMonth.from(aDate);
-                    YearMonth bMonth = YearMonth.from(bDate);
-                    return aMonth.compareTo(bMonth);
-                };
-                break;
-        }
-
-        // Sort the rows using the comparator
-        rows.sort(comparator);
 
         // Write the sorted data to the HTML file
         String html = "<html><head>\n" +
@@ -323,7 +291,7 @@ public class CsvJsonSwing extends JFrame {
                 }
             }
         });
-        subPanel.add(loadButton);
+        subPanelN.add(loadButton);
     }
 
     private void resetTable()throws IOException {
@@ -347,7 +315,7 @@ public class CsvJsonSwing extends JFrame {
         convertButton.addActionListener(e -> {
             if (lastLoadedFile != null) { // Update the variable name to lastLoadedFile
                 try {
-                    convertToHTML(lastLoadedFile.getAbsolutePath(), sortComboBox.getSelectedIndex());
+                    convertToHTML(lastLoadedFile.getAbsolutePath());
                 } catch (IOException ex) {
                     JOptionPane.showMessageDialog(this, "Error converting file to HTML: " + ex.getMessage());
                 }
@@ -355,7 +323,8 @@ public class CsvJsonSwing extends JFrame {
                 JOptionPane.showMessageDialog(this, "No file has been loaded to convert.");
             }
         });
-        panel.add(convertButton, BorderLayout.EAST);
+        subPanelN.add(convertButton);
+        panel.add(subPanelN, BorderLayout.NORTH);
     }
 
     public void openConvertedFileButton(){
@@ -371,7 +340,8 @@ public class CsvJsonSwing extends JFrame {
                 JOptionPane.showMessageDialog(this, "No converted file has been generated.");
             }
         });
-        panel.add(openButton, BorderLayout.WEST);
+        subPanelN.add(openButton);
+        panel.add(subPanelN, BorderLayout.NORTH);
     }
 
 
@@ -386,8 +356,8 @@ public class CsvJsonSwing extends JFrame {
             }
         });
 
-        subPanel.add(loadFromUriButton);
-        panel.add(subPanel, BorderLayout.SOUTH);
+        subPanelN.add(loadFromUriButton);
+        panel.add(subPanelN, BorderLayout.NORTH);
 
     }
     public void setOverlapButton(){
@@ -409,6 +379,24 @@ public class CsvJsonSwing extends JFrame {
         panel.add(subPanel, BorderLayout.SOUTH);
 
     }
+    public void convertTOJson()  {
+        JButton saveButton = new JButton("Save File");
+        saveButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new FileNameExtensionFilter("CSV/JSON Files", "csv", "json"));
+            int result = fileChooser.showSaveDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                String filename = fileChooser.getToolTipText();
+                System.out.println(filename);
+            }
+
+
+
+
+        });
+        subPanel.add(saveButton);
+        panel.add(subPanelN, BorderLayout.NORTH);
+    }
     public void setOverCrowdedButton(){
         JButton loadFromUriButton = new JButton("Mostrar Sobrelotação");
         loadFromUriButton.addActionListener(e -> {
@@ -428,18 +416,7 @@ public class CsvJsonSwing extends JFrame {
         panel.add(subPanel, BorderLayout.SOUTH);
 
     }
-    public void sortButton(){
-        JButton loadFromUriButton = new JButton("sort");
-        loadFromUriButton.addActionListener(e -> {
-            horario = Utils.sortByDate(horario);
 
-            displayModel(getModel(horario));
-        });
-
-        subPanel.add(loadFromUriButton);
-        panel.add(subPanel, BorderLayout.SOUTH);
-
-    }
     public void resetButton(){
         JButton loadFromUriButton = new JButton("reset");
         loadFromUriButton.addActionListener(e -> {

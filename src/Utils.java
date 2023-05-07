@@ -5,13 +5,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.io.BufferedReader;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -159,51 +156,20 @@ public class Utils {
      *
      * Engine para o display
      */
-
-
-    //TODO: COMPOR SORT
-    public static Horario sortByDate(Horario horario) {
-        ArrayList<Bloco> blocos = horario.horario;
-        Collections.sort(blocos, new Comparator<Bloco>() {
-            public int compare(Bloco b1, Bloco b2) {
-                int dataComp = b1.getDataAula().compareTo(b2.getDataAula());
-                if (dataComp == 0) {
-                    int horaComp = b1.getHoraInicioUC().compareTo(b2.getHoraInicioUC());
-                    return horaComp;
-                }
-                return dataComp;
-            }
-        });
-        return  horario;
-    }
-    private static ArrayList getOverCrowded(Horario horario){
+    public static ArrayList getOverCrowded(Horario horario) {
         ArrayList<Integer> index = new ArrayList<Integer>();
         for (Bloco bloco : horario.horario) {
-            if (bloco.getMaxSala()< bloco.nInscritos){
-                index.add(horario.horario.indexOf(bloco));
+            if (bloco.getMaxSala() < bloco.nInscritos) {
+                if (bloco.getMaxSala() < bloco.nInscritos) {
+                    index.add(horario.horario.indexOf(bloco));
+                }
             }
         }
         return index;
     }
 
-//    public static void setOverCrowded(Horario horario , JTable table) {
-//        sortByDate(horario);
-//        ArrayList<Integer> indexList =getOverCrowded(horario);
-//
-//        DefaultTableModel model = (DefaultTableModel) table.getModel();
-//        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-//        renderer.setBackground(Color.BLUE);
-//
-//        for (int i = 0; i < indexList.size(); i++) {
-//            int rowIndex = indexList.get(i);
-//            for (int j = 0; j < table.getColumnCount(); j++) {
-//                table.getCellRenderer(rowIndex, j).getTableCellRendererComponent(table, table.getValueAt(rowIndex, j), false, false, rowIndex, j).setBackground(new Color(51,153,255));
-//            }
-//            model.fireTableRowsUpdated(rowIndex, rowIndex);
-//        }
-//    }
     public static void setOverCrowded(Horario horario , JTable table) {
-        sortByDate(horario);
+
         ArrayList<Integer> indexList = getOverCrowded(horario);
 
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -226,7 +192,7 @@ public class Utils {
         }
     }
 
-    private static ArrayList getOverlap(Horario horario){
+    public static ArrayList getOverlap(Horario horario){
         ArrayList<Integer> index = new ArrayList<Integer>() ;
         ArrayList<Bloco> blocos = horario.horario;
 
@@ -247,7 +213,7 @@ public class Utils {
     }
 
     public static void setOverlap(Horario horario , JTable table) {
-        sortByDate(horario);
+
         ArrayList<Integer> indexList = getOverlap(horario);
 
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -282,16 +248,8 @@ public class Utils {
 
 
                     String firstday = getFday(date, horario,day31);
-
-
                     String lastday = getLday(firstday,horario,day31);
                     ArrayList<String> validDays = getValidDays(firstday,lastday,day31);
-                    for (String day : validDays) {
-                        System.out.println(day);
-                    }
-
-
-
 
 
                     for (Bloco bloco : horario.horario) {
@@ -304,7 +262,7 @@ public class Utils {
                         }
 
                     }
-//
+
 
 
                     break;
@@ -337,7 +295,7 @@ public class Utils {
 
     }
 
-    static String getFday(String date, Horario horario, int[] array){
+    public static String getFday(String date, Horario horario, int[] array){
         String[] parsedate = date.split("/");
         int day = Integer.parseInt(parsedate[0]);
         int month = Integer.parseInt(parsedate[1]);
@@ -347,7 +305,6 @@ public class Utils {
             String dataAula =  bloco.getDataAula();
             if (date.equals(dataAula)){
                 weekDay = bloco.getDia_sem();
-                System.out.println("dia da semana"+weekDay);
                 break;
             }
 
@@ -409,12 +366,12 @@ public class Utils {
                 month= 12;
             }
             if(month == 2){
-                day = 28 -4;
+                day = 28 + day;
             }else{
                 if(check31(month,array)){
-                    day= 31-4;
+                    day= 31 + day;
                 }else {
-                    day = 30-4;
+                    day = 30 +day;
                 }
             }
 
@@ -427,7 +384,7 @@ public class Utils {
 
 
     }
-    static String getLday(String date, Horario horario, int[] array){
+    public static String getLday(String date, Horario horario, int[] array){
         String[] parsedate = date.split("/");
         int day = Integer.parseInt(parsedate[0]);
         int month = Integer.parseInt(parsedate[1]);
@@ -448,7 +405,7 @@ public class Utils {
         return (formatD +"/" + formatM+ "/"+parsedate[2]);
 
     }
-    static boolean check31(int month, int[] array){
+    public static boolean check31(int month, int[] array){
         for (int i = 0; i < array.length; i++) {
             if (array[i] == month) {
                 return true;
@@ -528,13 +485,37 @@ public class Utils {
         return false;
     }
 
+
     public static void main(String[] args) throws IOException {
         Horario horario = new Horario();
-        Bloco bloco1 = new Bloco("ES","lei","segunda","b12",110,25,"12:30","15:00","11/12/2023","pl");
-        Bloco bloco2 = new Bloco("ES","lei-pl","terça","b12",110,25,"12:30","15:00","11/12/2023","pl");
+        Bloco bloco1 = new Bloco("ES","lei","segunda","b12",110,25,"12:30","15:00","11/9/2025","pl");
+        Bloco bloco2 = new Bloco("ES","lei-pl","terça","b12",110,25,"12:30","15:00","11/11/2023","pl");
+        Bloco bloco3 = new Bloco("ES","lei-pl","terça","b12",110,25,"12:30","15:00","11/7/2021","pl");
+        Bloco bloco4 = new Bloco("ES","lei-pl","terça","b12",110,25,"12:30","15:00","11/12/2023","pl");
+        Bloco bloco5 = new Bloco("ES","lei-pl","terça","b12",110,25,"12:30","15:00","11/10/2022","pl");
         horario.addToHor(bloco1);
         horario.addToHor(bloco2);
-        horarioToCSV(horario,"teste1csv");
+        horario.addToHor(bloco3);
+        horario.addToHor(bloco4);
+        horario.addToHor(bloco5);
+    }
+
+
+
+    public static String readFile(String filePath) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        StringBuilder content = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            content.append(line).append("\n");
+        }
+        reader.close();
+        return content.toString();
+    }
+
+    public static void deleteFile(String filePath) {
+        File file = new File(filePath);
+        file.delete();
     }
 
 }

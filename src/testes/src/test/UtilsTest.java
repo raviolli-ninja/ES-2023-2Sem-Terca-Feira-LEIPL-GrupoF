@@ -1,4 +1,4 @@
-package src.testes.src.test;
+package src.test;
 
 import org.junit.jupiter.api.Test;
 import src.Bloco;
@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static src.Utils.check31;
 import static src.Utils.readFile;
 
 class UtilsTest {
@@ -32,6 +33,7 @@ class UtilsTest {
         // Deleta o arquivo para não deixar resíduos no sistema de arquivos
         arquivo.delete();
     }
+
 
 
 
@@ -238,6 +240,66 @@ class UtilsTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void testGetFirstDay(){
+        int[] array = {1, 3, 5, 7, 8, 10, 12};
+        Horario horario = new Horario();
+        Bloco bloco1 = new Bloco("curso1", "manhã", "uc1", "turma1", "segunda", "sala1", 30, 20, "08:00:00", "09:30:00", "12/06/2023");
+        Bloco bloco2 = new Bloco("curso1", "manhã", "uc1", "turma1", "quarta", "sala1", 30, 20, "08:00:00", "09:30:00", "21/5/2023");
+        Bloco bloco3 = new Bloco("curso1", "manhã", "uc1", "turma1", "sexta", "sala1", 30, 20, "08:00:00", "09:30:00", "01/06/2023");
+        Bloco bloco4 = new Bloco("curso1", "manhã", "uc1", "turma1", "sexta", "sala1", 30, 20, "08:00:00", "09:30:00", "01/05/2023");
+        horario.addToHor(bloco1);
+        horario.addToHor(bloco2);
+        horario.addToHor(bloco3);
+        horario.addToHor(bloco4);
+
+        String expected1 ="27/04/2023";
+        assertEquals(expected1,Utils.getFday("1/05/2023",horario,array));
+        String expected2 ="19/05/2023";
+        assertEquals(expected2,Utils.getFday("21/05/2023",horario,array));
+        String expected3 ="28/06/2023";
+        assertEquals(expected3,Utils.getFday("1/06/2023",horario,array));
+        String expected4 ="12/06/2023";
+        assertEquals(expected4,Utils.getFday("12/06/2023",horario,array));
+    }
+
+    @Test
+    public void testGetLastDay1(){
+        Horario horario = new Horario();
+        int[] array = {1, 3, 5, 7, 8, 10, 12};
+        String date = "27/03/2022";
+        String expected ="02/04/2022";
+        assertEquals(expected,Utils.getLday(date,horario,array));
+    }
+
+    @Test
+    public void testGetLastDay2(){
+        Horario horario = new Horario();
+        int[] array = {1, 3, 5, 7, 8, 10, 12};
+        String date = "27/04/2022";
+        String expected ="03/04/2022";
+        assertEquals(expected,Utils.getLday(date,horario,array));
+        String date1 = "15/04/2022";
+        String expected1 ="22/04/2022";
+        assertEquals(expected1,Utils.getLday(date1,horario,array));
+        String date2 = "27/03/2022";
+        String expected2 ="02/04/2022";
+        assertEquals(expected2,Utils.getLday(date2,horario,array));
+    }
+
+
+    @Test
+    public void testCheck31(){
+        int[] array = {1, 3, 5, 7, 8, 10, 12};
+        assertEquals(true,check31(3,array));
+        assertEquals(true,check31(12,array));
+        assertEquals(true,check31(12,array));
+        assertEquals(false,check31(2,array));
+    }
+
+//TODO: test getvalidDays filter
 
 }
+
+
 
