@@ -356,8 +356,8 @@ public class CsvJsonSwing extends JFrame {
             }
         });
 
-        subPanelN.add(loadFromUriButton);
-        panel.add(subPanelN, BorderLayout.NORTH);
+        subPanel.add(loadFromUriButton);
+        panel.add(subPanel, BorderLayout.SOUTH);
 
     }
 
