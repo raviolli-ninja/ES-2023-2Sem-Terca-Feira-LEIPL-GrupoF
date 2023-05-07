@@ -70,12 +70,8 @@ public class CsvJsonSwing extends JFrame {
         subPanel = new JPanel();
         subPanelN = new JPanel();
 
-
-
-
         //Não confundir com a table com model, isto apenas abre espaço para o model
         showPreviewTable();
-
 
        //Butons
         loadFileButton();

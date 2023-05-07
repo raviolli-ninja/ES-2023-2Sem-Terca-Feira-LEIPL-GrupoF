@@ -46,7 +46,6 @@ class UtilsTest {
         horario.addToHor(new Bloco("Curso", "Turno", "UC1", "Turma", "Segunda", "Sala1", 50, 30, "08:00", "10:00", "01/01/2023"));
         horario.addToHor(new Bloco("Curso", "Turno", "UC2", "Turma", "Terça", "Sala2", 30, 15, "10:00", "12:00", "02/01/2023"));
 
-
         // Testa se o arquivo CSV é criado corretamente
         try {
             Utils.horarioToCSV(horario, "horario_teste");

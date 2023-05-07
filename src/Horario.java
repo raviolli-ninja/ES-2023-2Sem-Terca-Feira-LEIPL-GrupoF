@@ -16,9 +16,7 @@ public class Horario {
 
     public ArrayList<Bloco> horario = new ArrayList<Bloco>();
 
-    public Horario() {
-
-    }
+    public Horario() { }
 
     public Horario(String nome) {
         this.nome = nome;
