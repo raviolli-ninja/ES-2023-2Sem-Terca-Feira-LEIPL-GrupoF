@@ -69,6 +69,7 @@ public class Utils {
      * @throws IOException
      */
 
+
     public static void horarioToCSV(Horario horario, String nomeArquivo) throws IOException {
         // Cria o FileWriter para escrever no arquivo
         FileWriter writer = new FileWriter(nomeArquivo+".csv");
