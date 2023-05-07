@@ -353,8 +353,8 @@ public class CsvJsonSwing extends JFrame {
         loadFromUriButton.addActionListener(e -> {
             String uri = JOptionPane.showInputDialog(this, "Enter URI (use https:// instead of webcal:// for security reasons):");
             if (uri != null) {
-                //loadFileFromUri(uri);
-                displayModel(getModel(Utils.fromWebcalToHorario(uri)));
+                horario = Utils.fromWebcalToHorario(uri);
+                displayModel(getModel(horario));
             }else{
                 JOptionPane.showMessageDialog(this, "Null input, no preview generated.");
             }
