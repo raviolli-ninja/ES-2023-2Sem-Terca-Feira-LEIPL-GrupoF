@@ -79,14 +79,18 @@ public class CsvJsonSwing extends JFrame {
 
        //Butons
         loadFileButton();
+        loadFromURIButton();
+        convertCSVButton();
+        convertJASONButton();
         convertHTMLButton();
         openConvertedFileButton();
-        loadFromURIButton();
+
         setOverlapButton();
         setOverCrowdedButton();
         resetButton();
         filterButton();
-        convertTOJson();
+
+
 
     }
     public void loadFile(String filename) throws IOException {
@@ -356,8 +360,8 @@ public class CsvJsonSwing extends JFrame {
             }
         });
 
-        subPanel.add(loadFromUriButton);
-        panel.add(subPanel, BorderLayout.SOUTH);
+        subPanelN.add(loadFromUriButton);
+        panel.add(subPanelN, BorderLayout.NORTH);
 
     }
 
@@ -380,24 +384,24 @@ public class CsvJsonSwing extends JFrame {
         panel.add(subPanel, BorderLayout.SOUTH);
 
     }
-    public void convertTOJson()  {
-        JButton saveButton = new JButton("Save File");
-        saveButton.addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileFilter(new FileNameExtensionFilter("CSV/JSON Files", "csv", "json"));
-            int result = fileChooser.showSaveDialog(this);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                String filename = fileChooser.getToolTipText();
-                System.out.println(filename);
-            }
-
-
-
-
-        });
-        subPanel.add(saveButton);
-        panel.add(subPanelN, BorderLayout.NORTH);
-    }
+//    public void convertTOJson()  {
+//        JButton saveButton = new JButton("Save File");
+//        saveButton.addActionListener(e -> {
+//            JFileChooser fileChooser = new JFileChooser();
+//            fileChooser.setFileFilter(new FileNameExtensionFilter("CSV/JSON Files", "csv", "json"));
+//            int result = fileChooser.showSaveDialog(this);
+//            if (result == JFileChooser.APPROVE_OPTION) {
+//                String filename = fileChooser.getToolTipText();
+//                System.out.println(filename);
+//            }
+//
+//
+//
+//
+//        });
+//        subPanel.add(saveButton);
+//        panel.add(subPanelN, BorderLayout.NORTH);
+//    }
     public void setOverCrowdedButton(){
         JButton loadFromUriButton = new JButton("Mostrar Sobrelotação");
         loadFromUriButton.addActionListener(e -> {
@@ -442,6 +446,50 @@ public class CsvJsonSwing extends JFrame {
 
         subPanel.add(loadFromUriButton);
         panel.add(subPanel, BorderLayout.SOUTH);
+
+    }
+    public void convertCSVButton(){
+        JButton saveButton = new JButton("Converter Csv");
+        saveButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                int option = fileChooser.showSaveDialog(null);
+                if (option == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    String filePath = selectedFile.getAbsolutePath();
+                    try {
+                        Utils.horarioToCSV(horario,filePath);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        subPanelN.add(saveButton);
+        panel.add(subPanelN, BorderLayout.NORTH);
+
+    }
+    public void convertJASONButton(){
+        JButton saveButton = new JButton("Converter Json");
+        saveButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                int option = fileChooser.showSaveDialog(null);
+                if (option == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    String filePath = selectedFile.getAbsolutePath();
+                    try {
+                        Utils.horarioTOJSON(horario,filePath);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        subPanelN.add(saveButton);
+        panel.add(subPanelN, BorderLayout.NORTH);
 
     }
     void filter(){
