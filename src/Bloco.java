@@ -15,8 +15,6 @@ public class Bloco {
     public int maxSala,nInscritos;
 
 
-
-
     public Bloco(String curso,String turno,String uc, String turma, String dia_sem, String sala, int maxSala, int nInscritos, String horaInicioUC, String horaFimUC, String dataAula) {
 
         this.uc = uc;
