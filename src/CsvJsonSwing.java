@@ -84,7 +84,6 @@ public class CsvJsonSwing extends JFrame {
         convertJASONButton();
         convertHTMLButton();
         openConvertedFileButton();
-
         setOverlapButton();
         setOverCrowdedButton();
         resetButton();
@@ -95,7 +94,7 @@ public class CsvJsonSwing extends JFrame {
     }
     public void loadFile(String filename) throws IOException {
         source = filename;
-        Utils.clearColors(table);
+
         boolean isCsv = filename.endsWith(".csv");
         if (isCsv) {
             horario = Utils.csvToHorario(filename);
@@ -253,7 +252,7 @@ public class CsvJsonSwing extends JFrame {
 
 
 
-//
+
 
 
 
@@ -368,16 +367,9 @@ public class CsvJsonSwing extends JFrame {
     public void setOverlapButton(){
         JButton loadFromUriButton = new JButton("Mostrar Sobreposição");
         loadFromUriButton.addActionListener(e -> {
-            Utils.setOverlap(horario,table);
-            table.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    if (SwingUtilities.isLeftMouseButton(e)) {
+           DefaultTableModel model =  Utils.setOverlap(horario,table);
+           displayModel(model);
 
-                    }
-
-                }
-            });
         });
 
         subPanel.add(loadFromUriButton);
@@ -427,7 +419,7 @@ public class CsvJsonSwing extends JFrame {
         loadFromUriButton.addActionListener(e -> {
             try {
                 resetTable();
-                Utils.clearColors(table);
+
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }

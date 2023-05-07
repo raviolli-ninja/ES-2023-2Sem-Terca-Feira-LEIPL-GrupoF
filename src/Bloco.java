@@ -1,7 +1,10 @@
 package src;
 
 
-
+/**
+ * Objecto Bloco
+ * objecto responsavel por armazenar as informaçoes de cada bloco de aulas
+ */
 
 
 
