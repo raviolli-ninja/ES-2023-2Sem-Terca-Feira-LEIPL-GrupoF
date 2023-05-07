@@ -1,5 +1,14 @@
 package src;
 
+
+/**
+ * Objecto Bloco
+ * objecto responsavel por armazenar as informaçoes de cada bloco de aulas
+ */
+
+
+
+
 public class Bloco {
 
     public  String uc,turma,dia_sem,sala, curso, turno,horaInicioUC,horaFimUC, dataAula;

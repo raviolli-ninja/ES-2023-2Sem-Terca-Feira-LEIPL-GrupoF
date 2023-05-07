@@ -9,21 +9,27 @@ import net.fortuna.ical4j.model.component.VEvent;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.xml.crypto.dsig.CanonicalizationMethod;
 import java.awt.*;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
+
 
 
 public class Utils {
 
-
+    /**
+     *
+     * este metodo converte um objecto do tipo horario para um arquivo json
+     * @param horario
+     * @param nomeArquivo
+     * @throws IOException
+     */
     public static void horarioTOJSON(Horario horario, String nomeArquivo) throws IOException {
         // Cria o objeto que irá representar o horário em JSON
         HorarioJSON horarioJSON = new HorarioJSON();
@@ -41,6 +47,9 @@ public class Utils {
         }
     }
 
+    /**
+     * classe auxiliar
+     */
     private static class HorarioJSON {
         private ArrayList<Bloco> horarios;
 
@@ -52,6 +61,13 @@ public class Utils {
             this.horarios = horarios;
         }
     }
+
+    /**
+     * este metodo converte um objeto do tipo horario para um ficheiro csv
+     * @param horario
+     * @param nomeArquivo
+     * @throws IOException
+     */
 
     public static void horarioToCSV(Horario horario, String nomeArquivo) throws IOException {
         // Cria o FileWriter para escrever no arquivo
@@ -90,27 +106,36 @@ public class Utils {
         writer.close();
     }
 
+    /**
+     * este metodo converte um arquivo csv para um objecto do tipo horario
+     * @param arquivoCSV
+     * @return Horario
+     * @throws IOException
+     */
     public static Horario csvToHorario(String arquivoCSV) throws IOException {
         Horario horario = new Horario();
         BufferedReader br = new BufferedReader(new FileReader(arquivoCSV));
         String linha = br.readLine(); // pula a linha de cabeçalho do arquivo
+         linha = br.readLine(); // pula a linha de cabeçalho do arquivo
         while ((linha = br.readLine()) != null) {
-            String[] campos = linha.split(",");
+            String[] campos = linha.split(";");
+            if (campos.length == 11){
+                String curso = campos[0].isEmpty() ? "NA" : campos[0];
+                String uc = campos[1].isEmpty() ? "NA" : campos[1];
+                String turma = campos[3].isEmpty() ? "NA" : campos[3];
+                String diaSem = campos[5].isEmpty() ? "NA" : campos[5];
+                String sala = campos[9].isEmpty() ? "NA" : campos[9];
+                int maxSala = campos[10].isEmpty() ? 0 : Integer.parseInt(campos[10]);
+                int nInscritos = campos[4].isEmpty() ? 0 : Integer.parseInt(campos[4]);
+                String horaInicioUC = campos[6].isEmpty() ? "NA" : campos[6];
+                String horaFimUC = campos[7].isEmpty() ? "NA" : campos[7];
+                String dataAula = campos[8].isEmpty() ? "NA" : campos[8];
+                String turno = campos[2].isEmpty() ? "NA" : campos[2];
 
-            String curso = campos[0];
-            String uc = campos[1];
-            String turma = campos[3];
-            String diaSem = campos[5];
-            String sala = campos[9];
-            int maxSala = Integer.parseInt(campos[10]);
-            int nInscritos = Integer.parseInt(campos[4]);
-            String horaInicioUC = campos[6];
-            String horaFimUC = campos[7];
-            String dataAula = campos[8];
-            String turno = campos[2];
+                Bloco bloco = new Bloco(curso,turno, uc,  turma,  diaSem, sala,  maxSala,nInscritos, horaInicioUC, horaFimUC, dataAula);
+                horario.addToHor(bloco);
+            }
 
-            Bloco bloco = new Bloco(curso,turno, uc,  turma,  diaSem, sala,  maxSala,nInscritos, horaInicioUC, horaFimUC, dataAula);
-            horario.addToHor(bloco);
         }
 
         br.close();
@@ -118,18 +143,24 @@ public class Utils {
         return horario;
     }
 
+
+    /**
+     * este metodo converte um arquivo json para um objecto do tipo horario
+     * @param filename
+     * @return Horario
+     */
     public static Horario parseJson(String filename) {
         Gson gson = new Gson();
         Horario horario = new Horario();
         try {
-            // Lê o arquivo JSON e converte em um objeto JsonObject
+
             FileReader fileReader = new FileReader(filename);
             JsonObject jsonObject = gson.fromJson(fileReader, JsonObject.class);
 
-            // Extrai a lista de blocos do objeto JsonObject
+
             JsonArray jsonArray = jsonObject.get("horarios").getAsJsonArray();
 
-            // Itera sobre cada elemento do JsonArray e cria um objeto Bloco para cada um
+
             ArrayList<Bloco> blocos = new ArrayList<Bloco>();
             for (JsonElement jsonElement : jsonArray) {
                 JsonObject jsonBloco = jsonElement.getAsJsonObject();
@@ -156,6 +187,12 @@ public class Utils {
             return null;
         }
     }
+
+    /**
+     * este metodo le um horario webcall e converte-o para um horarios
+     * @param uri
+     * @return
+     */
     public static Horario fromWebcalToHorario (String uri) {
         Horario horario = new Horario();
         SimpleDateFormat outputTimeFormat = new SimpleDateFormat("HH:mm:ss");
@@ -194,27 +231,13 @@ public class Utils {
         return horario;
     }
 
-    /***********************************************************************************
-     *
-     * Engine para o display
+
+    /**
+     * este metodo recebe um horario e verifica se ha salas com sobrelotação comparando o numero de inscritos com a lotação maxima da sala
+     * caso a sala esteja sobrelotada o index é guradado numa lista
+     * @param horario
+     * @return
      */
-
-
-    //TODO: COMPOR SORT
-    public static Horario sortByDate(Horario horario) {
-        ArrayList<Bloco> blocos = horario.horario;
-        Collections.sort(blocos, new Comparator<Bloco>() {
-            public int compare(Bloco b1, Bloco b2) {
-                int dataComp = b1.getDataAula().compareTo(b2.getDataAula());
-                if (dataComp == 0) {
-                    int horaComp = b1.getHoraInicioUC().compareTo(b2.getHoraInicioUC());
-                    return horaComp;
-                }
-                return dataComp;
-            }
-        });
-        return  horario;
-    }
     public static ArrayList getOverCrowded(Horario horario){
         ArrayList<Integer> index = new ArrayList<Integer>();
         for (Bloco bloco : horario.horario) {
@@ -222,49 +245,48 @@ public class Utils {
                 index.add(horario.horario.indexOf(bloco));
             }
         }
-        return index;
+        int max = horario.horario.size();
+        ArrayList<Integer> reversed = new ArrayList<Integer>();
+
+        for(int i =0; i<max; i++){
+            if(!index.contains(i)){
+                reversed.add(i);
+            }
+        }
+        return reversed;
     }
 
-//    public static void setOverCrowded(Horario horario , JTable table) {
-//        sortByDate(horario);
-//        ArrayList<Integer> indexList =getOverCrowded(horario);
-//
-//        DefaultTableModel model = (DefaultTableModel) table.getModel();
-//        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-//        renderer.setBackground(Color.BLUE);
-//
-//        for (int i = 0; i < indexList.size(); i++) {
-//            int rowIndex = indexList.get(i);
-//            for (int j = 0; j < table.getColumnCount(); j++) {
-//                table.getCellRenderer(rowIndex, j).getTableCellRendererComponent(table, table.getValueAt(rowIndex, j), false, false, rowIndex, j).setBackground(new Color(51,153,255));
-//            }
-//            model.fireTableRowsUpdated(rowIndex, rowIndex);
-//        }
-//    }
-    public static void setOverCrowded(Horario horario , JTable table) {
-        sortByDate(horario);
+    /**
+     * metodo que recebendo um hhorario e um tabel, recorre ao metodo gerOverCrowded e perante essa lista remove todas as linhas com esse index ficando apenas as linhas de sobrelotação
+     * @param horario
+     * @param table
+     * @return
+     */
+    public static DefaultTableModel setOverCrowded(Horario horario , JTable table) {
+
         ArrayList<Integer> indexList = getOverCrowded(horario);
 
+
         DefaultTableModel model = (DefaultTableModel) table.getModel();
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setBackground(Color.BLUE);
 
-        // Obter a posição da célula clicada
-        int clickedRow = table.getSelectedRow();
-        int clickedCol = table.getSelectedColumn();
+        for (int i =indexList.size()-1 ; i >= 0; i--) {
 
-        for (int i = 0; i < indexList.size(); i++) {
-            int rowIndex = indexList.get(i);
-            for (int j = 0; j < table.getColumnCount(); j++) {
-                // Verificar se a célula atual não é a célula clicada
-                if (rowIndex != clickedRow || j != clickedCol) {
-                    table.getCellRenderer(rowIndex, j).getTableCellRendererComponent(table, table.getValueAt(rowIndex, j), false, false, rowIndex, j).setBackground(new Color(51, 153, 255));
-                }
-            }
-            model.fireTableRowsUpdated(rowIndex, rowIndex);
+            model.removeRow(indexList.get(i));
+
         }
+
+
+
+        return model;
     }
 
+
+    /**
+     * metodo que no horario procura aulas subrepostas comparando o dia a hora inicial e a sala
+     * devolve uma lista de index das linhas da tabela respectivas as aulas sobrepostas
+     * @param horario
+     * @return
+     */
     public static ArrayList getOverlap(Horario horario){
         ArrayList<Integer> index = new ArrayList<Integer>() ;
         ArrayList<Bloco> blocos = horario.horario;
@@ -273,35 +295,86 @@ public class Utils {
             Bloco bloco1 = blocos.get(i);
             for (int j = i + 1; j < blocos.size(); j++) {
                 Bloco bloco2 = blocos.get(j);
+
                 if (bloco1.getDataAula().equals(bloco2.getDataAula()) &&
                         bloco1.getHoraInicioUC().equals(bloco2.getHoraInicioUC()) &&
                         bloco1.getSala().equals(bloco2.getSala())) {
-                    index.add(blocos.indexOf(bloco1));
-                    index.add(blocos.indexOf(bloco2));
+
+
+                    if(!alreadyExists(index, blocos.indexOf(bloco1))){
+                        index.add(blocos.indexOf(bloco1));
+                    }
+
+                    if(!alreadyExists(index, blocos.indexOf(bloco2))){
+                        index.add(blocos.indexOf(bloco2));
+                    }
+
                 }
             }
+
+
+        }
+        int max = horario.horario.size();
+        ArrayList<Integer> reversed = new ArrayList<Integer>();
+
+        for(int i =0; i<blocos.size(); i++){
+            if(!index.contains(i)){
+                reversed.add(i);
+            }
         }
 
-        return index;
+
+
+
+        return reversed;
     }
 
-    public static void setOverlap(Horario horario , JTable table) {
-        sortByDate(horario);
-        ArrayList<Integer> indexList = getOverlap(horario);
+    /**
+     * utilizando o metod getOverLap obtem as linhas da tabela em que as aulas estao sobrepostas, e atualiza a tabela para so mostrar as aulas sobrepostas
+     * @param horario
+     * @param table
+     * @return
+     */
+    public static DefaultTableModel  setOverlap(Horario horario , JTable table) {
+
+        ArrayList<Integer> indexList = getOverlap(horario); //0 1 2 3 5 6
 
         DefaultTableModel model = (DefaultTableModel) table.getModel();
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setBackground(Color.RED);
 
-        for (int i = 0; i < indexList.size(); i++) {
-            int rowIndex = indexList.get(i);
-            for (int j = 0; j < table.getColumnCount(); j++) {
-                table.getCellRenderer(rowIndex, j).getTableCellRendererComponent(table, table.getValueAt(rowIndex, j), false, false, rowIndex, j).setBackground(Color.RED);
-            }
-            model.fireTableRowsUpdated(rowIndex, rowIndex);
+
+        for (int i =indexList.size()-1 ; i >= 0; i--) {
+
+            model.removeRow(indexList.get(i));
+
         }
+        return model;
+
     }
 
+    /**
+     * metodo auxiliar na obtenção de index a cima referida, verifica se o index ja se encontra na lista
+     * @param Blist
+     * @param index
+     * @return
+     */
+    public static boolean alreadyExists(ArrayList<Integer>Blist, int index){
+        for (Integer list: Blist ){
+            if (list == index){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * metodo que filtra o horario por dia mes e semana
+     * recebe um horario, o tipo de filtro e uma data de uma aula existente
+     * @param horario
+     * @param filter
+     * @param date
+     * @return
+     */
     public static Horario filter(Horario horario, String  filter, String date){
         Horario filtred = new Horario();
         int[] day31 = {1,3,5,7,8,10,12};
@@ -376,6 +449,14 @@ public class Utils {
 
     }
 
+    /**
+     * metodo auxiliar para o filtro semanal, recebendo uma data de aula obtem a data da segunda feira anterior a essa data,
+     * sendo a semanda, neste casom ordenada de segunda a domingo, obtem o dia da segunda feira do inicio da semana
+     * @param date
+     * @param horario
+     * @param array
+     * @return
+     */
     public static String getFday(String date, Horario horario, int[] array){
         String[] parsedate = date.split("/");
         int day = Integer.parseInt(parsedate[0]);
@@ -466,6 +547,15 @@ public class Utils {
 
 
     }
+
+    /**
+     * metodo auxiliar ao filtro por semana,
+     * recebendo a data da segunda feira obtem a data de domingo.
+     * @param date
+     * @param horario
+     * @param array
+     * @return
+     */
     public static String getLday(String date, Horario horario, int[] array){
         String[] parsedate = date.split("/");
         int day = Integer.parseInt(parsedate[0]);
@@ -487,6 +577,15 @@ public class Utils {
         return (formatD +"/" + formatM+ "/"+parsedate[2]);
 
     }
+
+    /**
+     *  metodo auxiliar no calculo da data, tanto da segunda feira como do domingo
+     *  recebendo um mes e um array verifica se esse mes esta dentro do array
+     *  esse array e um array dos meses que têm 31 dias
+     * @param month
+     * @param array
+     * @return
+     */
     public static boolean check31(int month, int[] array){
         for (int i = 0; i < array.length; i++) {
             if (array[i] == month) {
@@ -497,20 +596,14 @@ public class Utils {
     }
 
 
-
-    public static void clearColors(JTable table) {
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setBackground(Color.WHITE);
-
-        for (int row = 0; row < table.getRowCount(); row++) {
-            for (int col = 0; col < table.getColumnCount(); col++) {
-                table.getCellRenderer(row, col).getTableCellRendererComponent(table, table.getValueAt(row, col), false, false, row, col).setBackground(Color.WHITE);
-            }
-            model.fireTableRowsUpdated(row, row);
-        }
-    }
-
+    /**
+     * metodo auxiliar ao filtro semanal,
+     * recebendo uma segunda feira e um domingo calcula e guarda numa lista todas as datas dessa semana
+     * @param firstday
+     * @param lastday
+     * @param day31
+     * @return
+     */
     public static ArrayList<String> getValidDays(String firstday, String lastday, int[] day31){
         ArrayList<String>days =new ArrayList<String>();
         String[] parseF = firstday.split("/");
@@ -557,6 +650,13 @@ public class Utils {
 
         return days;
     }
+
+    /**
+     * metodo que verifica se a data passada existe no horario passado
+     * @param horario
+     * @param date
+     * @return
+     */
     static boolean checkHor(Horario horario, String date){
         for (Bloco bloco : horario.horario) {
             String dataAula = bloco.getDataAula();
@@ -567,14 +667,12 @@ public class Utils {
         return false;
     }
 
-    public static void main(String[] args) throws IOException {
-        Horario horario = new Horario();
-        Bloco bloco1 = new Bloco("ES","lei","segunda","b12",110,25,"12:30","15:00","11/12/2023","pl");
-        Bloco bloco2 = new Bloco("ES","lei-pl","terça","b12",110,25,"12:30","15:00","11/12/2023","pl");
-        horario.addToHor(bloco1);
-        horario.addToHor(bloco2);
-        horarioToCSV(horario,"teste1csv");
-    }
+    /**
+     * metodo auxiliar a classe testes, usado para ler ficheiros
+     * @param filePath
+     * @return
+     * @throws IOException
+     */
 
     public static String readFile(String filePath) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
@@ -587,6 +685,10 @@ public class Utils {
         return content.toString();
     }
 
+    /**
+     * metodo auxiliar a classe de testes, usado para apagar ficheiros
+     * @param filePath
+     */
     public static void deleteFile(String filePath) {
         File file = new File(filePath);
         file.delete();
